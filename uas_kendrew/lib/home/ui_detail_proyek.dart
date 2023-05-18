@@ -5,12 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:uas_kendrew/home/ui_buatjadwal.dart';
+import 'package:uas_kendrew/home/ui_readjadwal.dart';
+import 'package:uas_kendrew/laporan/ui_laporan.dart';
+import 'package:uas_kendrew/laporan/ui_laporanvendor.dart';
 import 'package:uas_kendrew/themes/colors.dart';
 import 'package:uas_kendrew/vendor/ui_vendor.dart';
 
 import '../themes/floatingactionwidget.dart';
 
-int angkacek = 0;
+int angkacek = 1;
 
 class DetailPage extends StatefulWidget {
   const DetailPage({super.key});
@@ -149,7 +153,7 @@ class _DetailPageState extends State<DetailPage> {
                                 style: GoogleFonts.notoSans(
                                   color: darkText,
                                   fontWeight: FontWeight.w500,
-                                  fontSize: 15,
+                                  fontSize: 11,
                                 ),
                               ),
                             ],
@@ -171,7 +175,7 @@ class _DetailPageState extends State<DetailPage> {
                                 style: GoogleFonts.notoSans(
                                   color: darkText,
                                   fontWeight: FontWeight.w500,
-                                  fontSize: 15,
+                                  fontSize: 11,
                                 ),
                               ),
                             ],
@@ -202,7 +206,39 @@ class _DetailPageState extends State<DetailPage> {
                                   style: GoogleFonts.notoSans(
                                     color: darkText,
                                     fontWeight: FontWeight.w500,
-                                    fontSize: 15,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const LaporanVendorPage(),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(15),
+                            decoration: const BoxDecoration(
+                                color: cardColor,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(8))),
+                            child: Row(
+                              children: [
+                                Icon(Icons.people_alt),
+                                SizedBox(width: 15),
+                                Text(
+                                  "Laporan Vendor",
+                                  style: GoogleFonts.notoSans(
+                                    color: darkText,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 11,
                                   ),
                                 ),
                               ],
@@ -221,11 +257,11 @@ class _DetailPageState extends State<DetailPage> {
                               Icon(Icons.people_alt),
                               SizedBox(width: 15),
                               Text(
-                                "Laporan",
+                                "Analisa",
                                 style: GoogleFonts.notoSans(
                                   color: darkText,
                                   fontWeight: FontWeight.w500,
-                                  fontSize: 15,
+                                  fontSize: 11,
                                 ),
                               ),
                             ],
@@ -243,16 +279,80 @@ class _DetailPageState extends State<DetailPage> {
                               Icon(Icons.people_alt),
                               SizedBox(width: 15),
                               Text(
-                                "Analisa",
+                                "Penawaran",
                                 style: GoogleFonts.notoSans(
                                   color: darkText,
                                   fontWeight: FontWeight.w500,
-                                  fontSize: 15,
+                                  fontSize: 11,
                                 ),
                               ),
                             ],
                           ),
-                        )
+                        ),
+                        const SizedBox(height: 20),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ReadJadwalPage(),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(15),
+                            decoration: const BoxDecoration(
+                                color: cardColor,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(8))),
+                            child: Row(
+                              children: [
+                                Icon(Icons.people_alt),
+                                SizedBox(width: 15),
+                                Text(
+                                  "Jadwal",
+                                  style: GoogleFonts.notoSans(
+                                    color: darkText,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const LaporanPage(),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(15),
+                            decoration: const BoxDecoration(
+                                color: cardColor,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(8))),
+                            child: Row(
+                              children: [
+                                Icon(Icons.people_alt),
+                                SizedBox(width: 15),
+                                Text(
+                                  "Laporan",
+                                  style: GoogleFonts.notoSans(
+                                    color: darkText,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -371,9 +471,12 @@ class _DetailPageState extends State<DetailPage> {
                     ),
                   ),
                   onPressed: () {
-                    setState(() {
-                      angkacek == 2;
-                    });
+                    Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const JadwalPage(),
+                  ),
+                );
                   },
                   child: Text(
                     "Buat Jadwal",
@@ -807,6 +910,10 @@ class BuatPenawaran2Page extends StatefulWidget {
 }
 
 class _BuatPenawaran2PageState extends State<BuatPenawaran2Page> {
+  DateTime _selectedDate = DateTime.now();
+  String _formattedDate = "";
+  String _date = "";
+
   @override
   void initState() {
     // TODO: implement initState
@@ -940,6 +1047,287 @@ class _BuatPenawaran2PageState extends State<BuatPenawaran2Page> {
                                       children: [
                                         Text(
                                           "Satuan",
+                                          style: GoogleFonts.notoSans(
+                                            fontSize: 15,
+                                            color: darkText,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        SizedBox(height: 5),
+                                        TextFieldYa(),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 40,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const SizedBox(height: 40),
+                                  ElevatedButton(
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 55, vertical: 22),
+                                      backgroundColor: navButtonThird,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text(
+                                      "Submit",
+                                      style: GoogleFonts.notoSans(
+                                        color: lightText,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 20),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: lightText,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 55, vertical: 22),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                      side: const BorderSide(
+                                          width: 1, // the thickness
+                                          color:
+                                              colorThird // the color of the border
+                                          ),
+                                    ),
+                                    child: Text(
+                                      "Batal",
+                                      style: GoogleFonts.notoSans(
+                                        color: colorThird,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    ).whenComplete(() {
+      setState(() {});
+    });
+  }
+
+  Future<void> selectFilterDate(context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(DateTime.now().year - 10, 1, 1),
+      lastDate: DateTime(DateTime.now().year + 10, 12, 31),
+      builder: (context, child) {
+        return Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: ColorScheme.light(
+                primary: Color(0xff13293D),
+                onPrimary: lightText,
+                onSurface: darkText,
+              ),
+              textButtonTheme: TextButtonThemeData(
+                style: TextButton.styleFrom(
+                  foregroundColor: Color(0xff13293D), // button text color
+                ),
+              ),
+            ),
+            child: child!);
+      },
+    );
+    if (picked != null && picked != _selectedDate) {
+      if (mounted) {
+        _selectedDate = picked;
+        _formattedDate = DateFormat('dd-MM-yyyy').format(_selectedDate);
+        _date = _formattedDate;
+
+        setState(() {});
+      }
+    }
+  }
+
+  _showEditHeader(dw, dh) {
+    showDialog(
+      barrierDismissible: false,
+      useRootNavigator: true,
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: ScrollConfiguration(
+                behavior: ScrollConfiguration.of(context).copyWith(
+                  dragDevices: {
+                    PointerDeviceKind.touch,
+                    PointerDeviceKind.mouse,
+                  },
+                ),
+                child: SingleChildScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  controller: ScrollController(),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.5,
+                    padding: const EdgeInsets.fromLTRB(0, 15, 0, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Text(
+                              "Edit Header Penawaran",
+                              style: GoogleFonts.notoSans(
+                                color: darkText,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 25,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const Divider(
+                          thickness: 1,
+                          height: 20,
+                          color: darkText,
+                        ),
+                        Container(
+                          padding: const EdgeInsets.fromLTRB(20, 20, 20, 15),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Kode Surat",
+                                          style: GoogleFonts.notoSans(
+                                            fontSize: 15,
+                                            color: darkText,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        SizedBox(height: 5),
+                                        TextFieldYa(),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(width: 15),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Tanggal Penawaran",
+                                          style: GoogleFonts.notoSans(
+                                            fontSize: 15,
+                                            color: darkText,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        SizedBox(height: 5),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                                color: darkText,
+                                                width: 1,
+                                                style: BorderStyle.solid),
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                          ),
+                                          child: Padding(
+                                            padding: EdgeInsets.all(9),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                  _date,
+                                                  style: GoogleFonts.notoSans(
+                                                    color: darkText,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 13,
+                                                  ),
+                                                ),
+                                                GestureDetector(
+                                                    onTap: () {
+                                                      selectFilterDate(context)
+                                                          .whenComplete(() =>
+                                                              setState(() {}));
+                                                    },
+                                                    child: const Icon(
+                                                        Icons.calendar_month)),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 20),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Nama Perusahaan",
+                                          style: GoogleFonts.notoSans(
+                                            fontSize: 15,
+                                            color: darkText,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        SizedBox(height: 5),
+                                        TextFieldYa(),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(width: 15),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Alamat Perusahaan",
                                           style: GoogleFonts.notoSans(
                                             fontSize: 15,
                                             color: darkText,
@@ -1283,6 +1671,12 @@ class _BuatPenawaran2PageState extends State<BuatPenawaran2Page> {
                           ),
                         ],
                       ),
+                      const SizedBox(width: 55),
+                      GestureDetector(
+                          onTap: () {
+                            _showEditHeader(deviceWidth, deviceHeight);
+                          },
+                          child: Icon(Icons.edit))
                     ],
                   ),
                   SizedBox(height: 40),
@@ -1400,9 +1794,60 @@ class _BuatPenawaran2PageState extends State<BuatPenawaran2Page> {
                     ],
                   ),
                   SizedBox(height: 80),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.fromLTRB(30, 17, 30, 17),
+                              backgroundColor: buttonColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            onPressed: () {},
+                            child: Text(
+                              "Generate PDF",
+                              style: GoogleFonts.notoSans(
+                                color: lightText,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 15),
+                          ElevatedButton(
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.fromLTRB(30, 17, 30, 17),
+                              backgroundColor: buttonColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const BuatPenawaran3Page(),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              "Tambah Pekerjaan",
+                              style: GoogleFonts.notoSans(
+                                color: lightText,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
                       ElevatedButton(
                         style: TextButton.styleFrom(
                           padding: EdgeInsets.fromLTRB(30, 17, 30, 17),
@@ -1413,33 +1858,7 @@ class _BuatPenawaran2PageState extends State<BuatPenawaran2Page> {
                         ),
                         onPressed: () {},
                         child: Text(
-                          "Generate PDF",
-                          style: GoogleFonts.notoSans(
-                            color: lightText,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 18,
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 15),
-                      ElevatedButton(
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.fromLTRB(30, 17, 30, 17),
-                          backgroundColor: buttonColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const BuatPenawaran3Page(),
-                            ),
-                          );
-                        },
-                        child: Text(
-                          "Tambah Pekerjaan",
+                          "Disetujui",
                           style: GoogleFonts.notoSans(
                             color: lightText,
                             fontWeight: FontWeight.w600,
@@ -2068,8 +2487,7 @@ class _BuatPenawaran3PageState extends State<BuatPenawaran3Page> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      onPressed: () {
-                      },
+                      onPressed: () {},
                       child: Text(
                         "Submit",
                         style: GoogleFonts.notoSans(
