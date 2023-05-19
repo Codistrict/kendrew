@@ -6,9 +6,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uas_kendrew/login/ui_login.dart';
 
 import 'package:uas_kendrew/themes/colors.dart';
+import 'package:uas_kendrew/ui_calendar.dart';
 
 import 'global_var.dart';
-
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,7 +42,8 @@ void main() {
         ),
         primaryColor: secondaryColor,
       ),
-      home: const MyApp(),
+      // home: const MyApp(),
+      home: const CalendarSf(),
     ),
   );
 }
