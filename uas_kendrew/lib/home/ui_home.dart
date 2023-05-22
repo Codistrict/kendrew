@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uas_kendrew/home/service_home.dart';
 import 'package:uas_kendrew/home/ui_detail_proyek.dart';
+import 'package:uas_kendrew/login/ui_login.dart';
 import 'package:uas_kendrew/themes/colors.dart';
 
+import '../global_var.dart';
 import '../themes/floatingactionwidget.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,10 +20,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  HomeService homeService = HomeService();
+  late Future allProject;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    // Read all project
+    allProject = homeService.readProject();
   }
 
   @override
@@ -27,6 +35,40 @@ class _HomePageState extends State<HomePage> {
     // TODO: implement dispose
     super.dispose();
   }
+
+  // ========== Write/Read SharedPref ========== //
+  Future<void> setAuthPref(String userID, int userStatus) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userID', userID);
+    await prefs.setInt('userStatus', userStatus);
+  }
+
+  Future<void> getAuthPref() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    userID = prefs.getString('userID') ?? "";
+    userStatus = prefs.getInt('userStatus') ?? 0;
+  }
+  // ========== Write/Read SharedPref ========== //
+
+  // ========== Func Finish Project ========== //
+  Future finishProject(context, projectID) async {
+    var response = await homeService.finishProject(projectID);
+    if (response[0] == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            response[1],
+            overflow: TextOverflow.ellipsis,
+            softWrap: true,
+          ),
+        ),
+      );
+      allProject =
+          homeService.readProject().whenComplete(() => setState(() {}));
+    } else {}
+  }
+  // ========== Func Finish Project ========== //
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +78,29 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: CustomFAB(
         icon: AnimatedIcons.menu_close,
         children: [
+          SpeedDialChild(
+              child: const Icon(
+                Icons.exit_to_app,
+                color: lightText,
+              ),
+              backgroundColor: buttonColor,
+              onTap: () {
+                setAuthPref("", 0).whenComplete(
+                  () => Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginPage(),
+                    ),
+                  ),
+                );
+              },
+              label: 'Logout',
+              labelStyle: GoogleFonts.inter(
+                fontSize: 16,
+                color: lightText,
+                fontWeight: FontWeight.w500,
+              ),
+              labelBackgroundColor: buttonColor),
           SpeedDialChild(
               child: const Icon(
                 Icons.add,
@@ -48,7 +113,7 @@ class _HomePageState extends State<HomePage> {
                   MaterialPageRoute(
                     builder: (context) => const BuatProjekPage(),
                   ),
-                );
+                ).whenComplete(() => null);
               },
               label: 'Tambah Proyek',
               labelStyle: GoogleFonts.inter(
@@ -78,6 +143,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: lightText,
         //diisi warna nek wes sesuai
         automaticallyImplyLeading: false,
+
         title: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
@@ -87,15 +153,19 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Text(
                   "Kendrew Tandiono",
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: true,
                   style: GoogleFonts.notoSans(
                     color: darkText,
                     fontWeight: FontWeight.w700,
                     fontSize: 16,
                   ),
                 ),
-                SizedBox(height: 5),
+                const SizedBox(height: 5),
                 Text(
                   "Felmel@gmail.com",
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: true,
                   style: GoogleFonts.notoSans(
                     color: darkText,
                     fontWeight: FontWeight.w400,
@@ -133,104 +203,146 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(25, 35, 25, 30),
-        child: GridView.builder(
-          itemCount: 8,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              childAspectRatio: 6 / 3.5,
-              crossAxisSpacing: 20,
-              mainAxisSpacing: 20),
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const DetailPage(),
-                  ),
-                );
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                    border: Border.all(
-                      color: darkText,
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(8))),
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
+        child: FutureBuilder(
+            future: allProject,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                List snapData = snapshot.data! as List;
+                if (snapData[0] != 404) {
+                  return GridView.builder(
+                    itemCount: snapData[2].length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            childAspectRatio: 6 / 3.5,
+                            crossAxisSpacing: 20,
+                            mainAxisSpacing: 20),
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DetailPage(
+                                uid: snapData[2][index]['id_proyek'],
+                              ),
+                            ),
+                          );
+                        },
                         child: Container(
-                          width: double.infinity,
-                          decoration: const BoxDecoration(
-                              image: DecorationImage(
-                                  image:
-                                      AssetImage("lib/assets/images/back.jpeg"),
-                                  fit: BoxFit.cover),
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                color: darkText,
+                              ),
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(8))),
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Proyek ABCD",
-                            style: GoogleFonts.notoSans(
-                              fontSize: 14,
-                              color: darkText,
-                              fontWeight: FontWeight.w500,
+                                  const BorderRadius.all(Radius.circular(8))),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    width: double.infinity,
+                                    decoration: const BoxDecoration(
+                                        image: DecorationImage(
+                                            image: AssetImage(
+                                                "lib/assets/images/back.jpeg"),
+                                            fit: BoxFit.cover),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(8))),
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        snapData[2][index]['nama_proyek'],
+                                        overflow: TextOverflow.ellipsis,
+                                        softWrap: true,
+                                        style: GoogleFonts.notoSans(
+                                          fontSize: 14,
+                                          color: darkText,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                    PopupMenuButton(
+                                        color: buttonColor,
+                                        itemBuilder: (context) {
+                                          return [
+                                            PopupMenuItem<int>(
+                                              onTap: () {
+                                                finishProject(
+                                                    context,
+                                                    snapData[2][index]
+                                                        ['id_proyek']);
+                                              },
+                                              value: 0,
+                                              child: Text(
+                                                "Done",
+                                                overflow: TextOverflow.ellipsis,
+                                                softWrap: true,
+                                                style: GoogleFonts.notoSans(
+                                                  fontSize: 13,
+                                                  color: lightText,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                            ),
+                                            PopupMenuItem<int>(
+                                              onTap: () {},
+                                              value: 1,
+                                              child: Text(
+                                                "Edit",
+                                                overflow: TextOverflow.ellipsis,
+                                                softWrap: true,
+                                                style: GoogleFonts.notoSans(
+                                                  fontSize: 13,
+                                                  color: lightText,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                            ),
+                                          ];
+                                        },
+                                        onSelected: (value) {}),
+                                  ],
+                                ),
+                                // Text(
+                                //   "Tommy Sulistyo",
+                                //   overflow: TextOverflow.ellipsis,
+                                //   softWrap: true,
+                                //   style: GoogleFonts.notoSans(
+                                //     fontSize: 12,
+                                //     color: darkText,
+                                //     fontWeight: FontWeight.w400,
+                                //   ),
+                                // ),
+                              ],
                             ),
                           ),
-                          PopupMenuButton(
-                              color: buttonColor,
-                              itemBuilder: (context) {
-                                return [
-                                  PopupMenuItem<int>(
-                                    value: 0,
-                                    child: Text(
-                                      "Done",
-                                      style: GoogleFonts.notoSans(
-                                        fontSize: 13,
-                                        color: lightText,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ),
-                                  PopupMenuItem<int>(
-                                    value: 1,
-                                    child: Text(
-                                      "Edit",
-                                      style: GoogleFonts.notoSans(
-                                        fontSize: 13,
-                                        color: lightText,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ),
-                                ];
-                              },
-                              onSelected: (value) {}),
-                        ],
-                      ),
-                      Text(
-                        "Tommy Sulistyo",
-                        style: GoogleFonts.notoSans(
-                          fontSize: 12,
-                          color: darkText,
-                          fontWeight: FontWeight.w400,
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
+                      );
+                    },
+                  );
+                } else {
+                  const Center(
+                    child: Text(
+                      "Currently no project",
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: true,
+                    ),
+                  );
+                }
+              }
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }),
       ),
     );
   }
@@ -244,6 +356,12 @@ class BuatProjekPage extends StatefulWidget {
 }
 
 class _BuatProjekPageState extends State<BuatProjekPage> {
+  HomeService homeService = HomeService();
+
+  final ctrlNamaProyek = TextEditingController();
+  final ctrlJumlahLantai = TextEditingController();
+  final ctrlLuasTanah = TextEditingController();
+  final ctrlPenanggungJawab = TextEditingController();
   @override
   void initState() {
     // TODO: implement initState
@@ -254,13 +372,56 @@ class _BuatProjekPageState extends State<BuatProjekPage> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+    ctrlNamaProyek.dispose();
+    ctrlJumlahLantai.dispose();
+    ctrlLuasTanah.dispose();
+    ctrlPenanggungJawab.dispose();
   }
 
-  TextFieldYa() {
+  // ========== Func Create Project ========== //
+  Future createProject(
+      context,
+      userID,
+      TextEditingController namaProyek,
+      TextEditingController jumlahLantai,
+      TextEditingController luasTanah,
+      TextEditingController penanggungJawab) async {
+    var response = await homeService.createProject(
+      userID,
+      namaProyek.text,
+      jumlahLantai.text,
+      luasTanah.text,
+      penanggungJawab.text,
+    );
+    if (response[0] == 200) {
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            response[1],
+            overflow: TextOverflow.ellipsis,
+            softWrap: true,
+          ),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Failed to create project",
+            overflow: TextOverflow.ellipsis,
+            softWrap: true,
+          ),
+        ),
+      );
+    }
+  }
+  // ========== Func Create Project ========== //
+
+  TextFieldYa(controller) {
     return TextField(
       readOnly: false,
-      // controller:
-      //     _controllerJumlahBarangTambahPenjualan,
+      controller: controller,
       showCursor: true,
       style: GoogleFonts.inter(
         fontWeight: FontWeight.w500,
@@ -298,11 +459,10 @@ class _BuatProjekPageState extends State<BuatProjekPage> {
     );
   }
 
-  TextFieldYa2() {
+  TextFieldYa2(controller) {
     return TextField(
       readOnly: false,
-      // controller:
-      //     _controllerJumlahBarangTambahPenjualan,
+      controller: controller,
       keyboardType: TextInputType.number,
       showCursor: true,
       style: GoogleFonts.inter(
@@ -376,15 +536,19 @@ class _BuatProjekPageState extends State<BuatProjekPage> {
                     children: [
                       Text(
                         "Kendrew Tandiono",
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: true,
                         style: GoogleFonts.notoSans(
                           color: darkText,
                           fontWeight: FontWeight.w700,
                           fontSize: 16,
                         ),
                       ),
-                      SizedBox(height: 5),
+                      const SizedBox(height: 5),
                       Text(
                         "Felmel@gmail.com",
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: true,
                         style: GoogleFonts.notoSans(
                           color: darkText,
                           fontWeight: FontWeight.w400,
@@ -438,38 +602,42 @@ class _BuatProjekPageState extends State<BuatProjekPage> {
                           children: [
                             Text(
                               "Masukkan Nama Projek",
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: true,
                               style: GoogleFonts.notoSans(
                                 fontSize: 15,
                                 color: darkText,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            SizedBox(height: 5),
-                            TextFieldYa(),
+                            const SizedBox(height: 5),
+                            TextFieldYa(ctrlNamaProyek),
                           ],
                         ),
                       ),
-                      SizedBox(width: 15),
+                      const SizedBox(width: 15),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               "Masukkan Jumlah Lantai",
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: true,
                               style: GoogleFonts.notoSans(
                                 fontSize: 15,
                                 color: darkText,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            SizedBox(height: 5),
-                            TextFieldYa2(),
+                            const SizedBox(height: 5),
+                            TextFieldYa2(ctrlJumlahLantai),
                           ],
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Row(
                     children: [
                       Expanded(
@@ -478,51 +646,65 @@ class _BuatProjekPageState extends State<BuatProjekPage> {
                           children: [
                             Text(
                               "Masukkan Luas Tanah",
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: true,
                               style: GoogleFonts.notoSans(
                                 fontSize: 15,
                                 color: darkText,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            SizedBox(height: 5),
-                            TextFieldYa2(),
+                            const SizedBox(height: 5),
+                            TextFieldYa2(ctrlLuasTanah),
                           ],
                         ),
                       ),
-                      SizedBox(width: 15),
+                      const SizedBox(width: 15),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               "Masukkan Penanggung Jawab",
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: true,
                               style: GoogleFonts.notoSans(
                                 fontSize: 15,
                                 color: darkText,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            SizedBox(height: 5),
-                            TextFieldYa(),
+                            const SizedBox(height: 5),
+                            TextFieldYa(ctrlPenanggungJawab),
                           ],
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 100),
+                  const SizedBox(height: 100),
                   Align(
                     alignment: Alignment.bottomRight,
                     child: ElevatedButton(
                       style: TextButton.styleFrom(
-                        padding: EdgeInsets.fromLTRB(30, 17, 30, 17),
+                        padding: const EdgeInsets.fromLTRB(30, 17, 30, 17),
                         backgroundColor: buttonColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        createProject(
+                            context,
+                            userID,
+                            ctrlNamaProyek,
+                            ctrlJumlahLantai,
+                            ctrlLuasTanah,
+                            ctrlPenanggungJawab);
+                      },
                       child: Text(
                         "Submit",
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: true,
                         style: GoogleFonts.notoSans(
                           color: lightText,
                           fontWeight: FontWeight.w600,

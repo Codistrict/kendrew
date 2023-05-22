@@ -17,7 +17,11 @@ import '../themes/floatingactionwidget.dart';
 int angkacek = 1;
 
 class DetailPage extends StatefulWidget {
-  const DetailPage({super.key});
+  final String uid;
+  const DetailPage({
+    super.key,
+    required this.uid,
+  });
 
   @override
   State<DetailPage> createState() => _DetailPageState();
@@ -472,11 +476,11 @@ class _DetailPageState extends State<DetailPage> {
                   ),
                   onPressed: () {
                     Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const JadwalPage(),
-                  ),
-                );
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const JadwalPage(),
+                      ),
+                    );
                   },
                   child: Text(
                     "Buat Jadwal",

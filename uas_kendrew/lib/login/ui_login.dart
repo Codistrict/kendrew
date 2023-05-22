@@ -2,7 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uas_kendrew/global_var.dart';
 import 'package:uas_kendrew/home/ui_home.dart';
+import 'package:uas_kendrew/login/service_login.dart';
 import 'package:uas_kendrew/themes/colors.dart';
 
 class LoginPage extends StatefulWidget {
@@ -13,6 +15,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final ctrlUsername = TextEditingController();
+  final ctrlPassword = TextEditingController();
+
+  AuthService authService = AuthService();
+
   @override
   void initState() {
     // TODO: implement initState
@@ -23,13 +30,29 @@ class _LoginPageState extends State<LoginPage> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+    ctrlUsername.dispose();
+    ctrlPassword.dispose();
   }
 
-  textFieldLogin(texthint) {
+  // ========== Write/Read SharedPref ========== //
+  Future<void> setAuthPref(String userID, int userStatus) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userID', userID);
+    await prefs.setInt('userStatus', userStatus);
+  }
+
+  Future<void> getAuthPref() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    userID = prefs.getString('userID') ?? "";
+    userStatus = prefs.getInt('userStatus') ?? 0;
+  }
+  // ========== Write/Read SharedPref ========== //
+
+  textFieldLogin(texthint, controller) {
     return TextField(
       readOnly: false,
-      // controller:
-      //     _controllerJumlahBarangTambahPenjualan,
+      controller: controller,
       showCursor: false,
       style: GoogleFonts.notoSans(
         fontWeight: FontWeight.w600,
@@ -61,6 +84,40 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
+  // ========== Func Login ========== //
+  Future login(context, TextEditingController username,
+      TextEditingController password) async {
+    var response = await authService.login(
+      username.text,
+      password.text,
+    );
+    if (response[0] == 200) {
+      // Write Pref
+      setAuthPref(
+        response[2]['id_user'],
+        response[2]['status_akun'],
+      ).then((value) {
+        // then navigate to Home
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const HomePage(),
+          ),
+        );
+      });
+    } else {
+      // Show snackbar message if user not found
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "User not found",
+          ),
+        ),
+      );
+    }
+  }
+  // ========== Func Login ========== //
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +162,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       const SizedBox(height: 10),
-                      textFieldLogin("Masukkan Nama Pengguna"),
+                      textFieldLogin("Masukkan Nama Pengguna", ctrlUsername),
                       const SizedBox(height: 30),
                       Text(
                         "Kata Sandi",
@@ -116,26 +173,23 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       const SizedBox(height: 10),
-                      textFieldLogin("Masukkan Kata Sandi"),
+                      textFieldLogin("Masukkan Kata Sandi", ctrlPassword),
                       const SizedBox(height: 50),
                       Row(
                         children: [
                           Expanded(
                             child: ElevatedButton(
                               style: TextButton.styleFrom(
-                                padding: EdgeInsets.only(top: 17, bottom: 17),
+                                padding:
+                                    const EdgeInsets.only(top: 17, bottom: 17),
                                 backgroundColor: buttonColor,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
                               onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const HomePage(),
-                                  ),
-                                );
+                                // ========== Call Func Login ========== //
+                                login(context, ctrlUsername, ctrlPassword);
                               },
                               child: Text(
                                 "Masuk",
