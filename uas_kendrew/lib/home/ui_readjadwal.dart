@@ -139,11 +139,11 @@ class _ReadJadwalPageState extends State<ReadJadwalPage> {
                 backgroundColor: buttonColor,
                 onTap: () async {
                   Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const EditDepenPage(),
-                              ),
-                            );
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const EditDepenPage(),
+                    ),
+                  );
                 },
                 label: 'Edit Depedencies',
                 labelStyle: GoogleFonts.inter(
@@ -451,7 +451,7 @@ class _EditDepenPageState extends State<EditDepenPage> {
     final deviceWidth = MediaQuery.of(context).size.width;
     final deviceHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-      floatingActionButton: CustomFAB(
+        floatingActionButton: CustomFAB(
           icon: AnimatedIcons.menu_close,
           children: [
             SpeedDialChild(
@@ -661,11 +661,11 @@ class _EditDepenPageState extends State<EditDepenPage> {
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           GestureDetector(
-                                            onTap: () {
-                                            },
+                                            onTap: () {},
                                             child: Container(
-                                              padding: const EdgeInsets.fromLTRB(
-                                                  8, 0, 8, 0),
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      8, 0, 8, 0),
                                               //width: 40,
                                               decoration: BoxDecoration(
                                                 color: buttonColor,

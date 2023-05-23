@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:uas_kendrew/home/service_home.dart';
 import 'package:uas_kendrew/home/ui_buatjadwal.dart';
 import 'package:uas_kendrew/home/ui_readjadwal.dart';
 import 'package:uas_kendrew/laporan/ui_laporan.dart';
@@ -16,17 +17,31 @@ import '../themes/floatingactionwidget.dart';
 
 int angkacek = 1;
 
+int _jumlahLantai = 0;
+int _luasTanah = 0;
+String _penanggungJawab = "";
+
 class DetailPage extends StatefulWidget {
-  const DetailPage({super.key});
+  final String myId;
+  final String myNamaProyek;
+  const DetailPage({Key? key, required this.myId, required this.myNamaProyek})
+      : super(key: key);
 
   @override
   State<DetailPage> createState() => _DetailPageState();
 }
 
 class _DetailPageState extends State<DetailPage> {
+  late String myId;
+  late String myNamaProyek;
+  ServicesHome servicesUserDetail = ServicesHome();
+
   @override
   void initState() {
     // TODO: implement initState
+    myId = widget.myId;
+    myNamaProyek = widget.myNamaProyek;
+    _getDetail(myId);
     super.initState();
   }
 
@@ -34,6 +49,19 @@ class _DetailPageState extends State<DetailPage> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+  }
+
+  Future _getDetail(id) async {
+    var response = await servicesUserDetail.getDetailProyek(id);
+    if (response[0] != 404) {
+      for (var element in response[1]) {
+        _jumlahLantai = int.parse("${element['jumlah_lantai']}");
+        _luasTanah = int.parse("${element['luas_tanah']}");
+        _penanggungJawab = "${element['penangung_jawab']}";
+      }
+    } else {
+      throw "Gagal Mengambil Data";
+    }
   }
 
   @override
@@ -63,7 +91,7 @@ class _DetailPageState extends State<DetailPage> {
                 ),
                 const SizedBox(width: 10),
                 Text(
-                  "PT.Softindo Putra Perkasa",
+                  myNamaProyek,
                   style: GoogleFonts.notoSans(
                     color: darkText,
                     fontWeight: FontWeight.w400,
@@ -382,7 +410,7 @@ class _DetailPageState extends State<DetailPage> {
                               ),
                               SizedBox(width: 20),
                               Text(
-                                "PT. Softindo Putra Perkasa",
+                                myNamaProyek,
                                 style: GoogleFonts.notoSans(
                                   color: lightText,
                                   fontWeight: FontWeight.w500,
@@ -415,13 +443,74 @@ class _DetailPageState extends State<DetailPage> {
                                 ),
                               ),
                               SizedBox(height: 20),
-                              Text(
-                                "Lorem ipsum dolor sit amet consectetur. Quis aliquam faucibus blandit habitant. Habitant viverra ultricies enim odio proin fermentum nibh. Tempus faucibus vehicula aliquam ut morbi. Purus aliquam potenti sit gravida. Aenean gravida egestas mi enim in. Pharetra sed leo dolor morbi posuere sapien. Nulla ut faucibus purus hac quis. Risus ornare adipiscing elit augue lobortis eget volutpat imperdiet sem. At sit egestas id vel erat.",
-                                style: GoogleFonts.notoSans(
-                                  color: darkText,
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 15,
-                                ),
+                              Row(
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Jumlah Lantai",
+                                        style: GoogleFonts.notoSans(
+                                          color: darkText,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      SizedBox(height: 5),
+                                      Text(
+                                        "Luas Tanah",
+                                        style: GoogleFonts.notoSans(
+                                          color: darkText,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      SizedBox(height: 5),
+                                      Text(
+                                        "Penanggung Jawab",
+                                        style: GoogleFonts.notoSans(
+                                          color: darkText,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(width: 55),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        ": " + _jumlahLantai.toString(),
+                                        style: GoogleFonts.notoSans(
+                                          color: darkText,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      SizedBox(height: 5),
+                                      Text(
+                                        ": " + _luasTanah.toString(),
+                                        style: GoogleFonts.notoSans(
+                                          color: darkText,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      SizedBox(height: 5),
+                                      Text(
+                                        ": " + _penanggungJawab,
+                                        style: GoogleFonts.notoSans(
+                                          color: darkText,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -472,11 +561,11 @@ class _DetailPageState extends State<DetailPage> {
                   ),
                   onPressed: () {
                     Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const JadwalPage(),
-                  ),
-                );
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const JadwalPage(),
+                      ),
+                    );
                   },
                   child: Text(
                     "Buat Jadwal",

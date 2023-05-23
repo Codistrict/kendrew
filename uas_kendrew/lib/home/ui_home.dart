@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uas_kendrew/home/service_home.dart';
 import 'package:uas_kendrew/home/ui_detail_proyek.dart';
 import 'package:uas_kendrew/themes/colors.dart';
 
@@ -16,9 +17,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  late Future getAllProyek;
+  ServicesHome servicesUserHome = ServicesHome();
+
   @override
   void initState() {
     // TODO: implement initState
+    getAllProyek = servicesUserHome.getProyek();
     super.initState();
   }
 
@@ -132,106 +137,128 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(25, 35, 25, 30),
-        child: GridView.builder(
-          itemCount: 8,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              childAspectRatio: 6 / 3.5,
-              crossAxisSpacing: 20,
-              mainAxisSpacing: 20),
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const DetailPage(),
-                  ),
-                );
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                    border: Border.all(
-                      color: darkText,
+          padding: const EdgeInsets.fromLTRB(25, 35, 25, 30),
+          child: FutureBuilder(
+            future: getAllProyek,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                List snapData = snapshot.data! as List;
+                if (snapData[0] != 404) {
+                  return ScrollConfiguration(
+                    behavior: ScrollConfiguration.of(context).copyWith(
+                      dragDevices: {
+                        PointerDeviceKind.touch,
+                        PointerDeviceKind.mouse,
+                      },
                     ),
-                    borderRadius: BorderRadius.all(Radius.circular(8))),
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Container(
-                          width: double.infinity,
-                          decoration: const BoxDecoration(
-                              image: DecorationImage(
-                                  image:
-                                      AssetImage("lib/assets/images/back.jpeg"),
-                                  fit: BoxFit.cover),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8))),
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Proyek ABCD",
-                            style: GoogleFonts.notoSans(
-                              fontSize: 14,
-                              color: darkText,
-                              fontWeight: FontWeight.w500,
+                    child: GridView.builder(
+                      itemCount: snapData[1].length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              childAspectRatio: 6 / 3.5,
+                              crossAxisSpacing: 20,
+                              mainAxisSpacing: 20),
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DetailPage(myId: snapData[1][index]['id_proyek'].toString(), myNamaProyek: snapData[1][index]['nama_proyek'].toString()),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: darkText,
+                                ),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(8))),
+                            child: Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      width: double.infinity,
+                                      decoration: const BoxDecoration(
+                                          image: DecorationImage(
+                                              image: AssetImage(
+                                                  "lib/assets/images/back.jpeg"),
+                                              fit: BoxFit.cover),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(8))),
+                                    ),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        snapData[1][index]['nama_proyek'],
+                                        style: GoogleFonts.notoSans(
+                                          fontSize: 14,
+                                          color: darkText,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      PopupMenuButton(
+                                          color: buttonColor,
+                                          itemBuilder: (context) {
+                                            return [
+                                              PopupMenuItem<int>(
+                                                value: 0,
+                                                child: Text(
+                                                  "Done",
+                                                  style: GoogleFonts.notoSans(
+                                                    fontSize: 13,
+                                                    color: lightText,
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                                ),
+                                              ),
+                                              PopupMenuItem<int>(
+                                                value: 1,
+                                                child: Text(
+                                                  "Edit",
+                                                  style: GoogleFonts.notoSans(
+                                                    fontSize: 13,
+                                                    color: lightText,
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                                ),
+                                              ),
+                                            ];
+                                          },
+                                          onSelected: (value) {}),
+                                    ],
+                                  ),
+                                  Text(
+                                    snapData[1][index]['penanggungjawab'].toString(),
+                                    style: GoogleFonts.notoSans(
+                                      fontSize: 12,
+                                      color: darkText,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                          PopupMenuButton(
-                              color: buttonColor,
-                              itemBuilder: (context) {
-                                return [
-                                  PopupMenuItem<int>(
-                                    value: 0,
-                                    child: Text(
-                                      "Done",
-                                      style: GoogleFonts.notoSans(
-                                        fontSize: 13,
-                                        color: lightText,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ),
-                                  PopupMenuItem<int>(
-                                    value: 1,
-                                    child: Text(
-                                      "Edit",
-                                      style: GoogleFonts.notoSans(
-                                        fontSize: 13,
-                                        color: lightText,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ),
-                                ];
-                              },
-                              onSelected: (value) {}),
-                        ],
-                      ),
-                      Text(
-                        "Tommy Sulistyo",
-                        style: GoogleFonts.notoSans(
-                          fontSize: 12,
-                          color: darkText,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
+                        );
+                      },
+                    ),
+                  );
+                }
+              }
+              return Column();
+            },
+          )),
     );
   }
 }
@@ -244,6 +271,13 @@ class BuatProjekPage extends StatefulWidget {
 }
 
 class _BuatProjekPageState extends State<BuatProjekPage> {
+  final _controllerNamaProyek = TextEditingController();
+  final _controllerLuasTanahProyek = TextEditingController();
+  final _controllerJumlahLantaiProyek = TextEditingController();
+  final _controllerNamaPenanggungJawabProyek = TextEditingController();
+
+  ServicesHome servicesUserHome = ServicesHome();
+
   @override
   void initState() {
     // TODO: implement initState
@@ -256,11 +290,31 @@ class _BuatProjekPageState extends State<BuatProjekPage> {
     super.dispose();
   }
 
-  TextFieldYa() {
+  Future postProyek(
+      id_user, nama_proyek, jumlah_lantai, luas_tanah, nama, context) async {
+    var response = await servicesUserHome.inputProyek(
+      id_user,
+      nama_proyek,
+      jumlah_lantai,
+      luas_tanah,
+      nama,
+    );
+
+    if (response[0] != 404) {
+      return true;
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(response[1]),
+        ),
+      );
+    }
+  }
+
+  TextFieldYa(text) {
     return TextField(
       readOnly: false,
-      // controller:
-      //     _controllerJumlahBarangTambahPenjualan,
+      controller: text,
       showCursor: true,
       style: GoogleFonts.inter(
         fontWeight: FontWeight.w500,
@@ -298,11 +352,10 @@ class _BuatProjekPageState extends State<BuatProjekPage> {
     );
   }
 
-  TextFieldYa2() {
+  TextFieldYa2(text) {
     return TextField(
       readOnly: false,
-      // controller:
-      //     _controllerJumlahBarangTambahPenjualan,
+      controller: text,
       keyboardType: TextInputType.number,
       showCursor: true,
       style: GoogleFonts.inter(
@@ -445,7 +498,7 @@ class _BuatProjekPageState extends State<BuatProjekPage> {
                               ),
                             ),
                             SizedBox(height: 5),
-                            TextFieldYa(),
+                            TextFieldYa(_controllerNamaProyek),
                           ],
                         ),
                       ),
@@ -463,7 +516,7 @@ class _BuatProjekPageState extends State<BuatProjekPage> {
                               ),
                             ),
                             SizedBox(height: 5),
-                            TextFieldYa2(),
+                            TextFieldYa2(_controllerJumlahLantaiProyek),
                           ],
                         ),
                       ),
@@ -485,7 +538,7 @@ class _BuatProjekPageState extends State<BuatProjekPage> {
                               ),
                             ),
                             SizedBox(height: 5),
-                            TextFieldYa2(),
+                            TextFieldYa2(_controllerLuasTanahProyek),
                           ],
                         ),
                       ),
@@ -503,7 +556,7 @@ class _BuatProjekPageState extends State<BuatProjekPage> {
                               ),
                             ),
                             SizedBox(height: 5),
-                            TextFieldYa(),
+                            TextFieldYa(_controllerNamaPenanggungJawabProyek),
                           ],
                         ),
                       ),
@@ -520,7 +573,33 @@ class _BuatProjekPageState extends State<BuatProjekPage> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        if (_controllerNamaProyek.text != "" &&
+                            _controllerJumlahLantaiProyek.text != "" &&
+                            _controllerLuasTanahProyek.text != "" &&
+                            _controllerNamaPenanggungJawabProyek.text != "") {
+                          setState(() {
+                            postProyek(
+                                    "US001",
+                                    _controllerNamaProyek.text,
+                                    _controllerJumlahLantaiProyek.text,
+                                    _controllerLuasTanahProyek.text,
+                                    _controllerNamaPenanggungJawabProyek.text,
+                                    context)
+                                .then((value) {
+                              _controllerNamaProyek.clear();
+                              _controllerJumlahLantaiProyek.clear();
+                              _controllerLuasTanahProyek.clear();
+                              _controllerNamaPenanggungJawabProyek.clear();
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => HomePage()),
+                              );
+                            });
+                          });
+                        }
+                      },
                       child: Text(
                         "Submit",
                         style: GoogleFonts.notoSans(
