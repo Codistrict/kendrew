@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uas_kendrew/home/ui_home.dart';
 import 'package:uas_kendrew/login/ui_login.dart';
 
 import 'package:uas_kendrew/themes/colors.dart';
+import 'package:uas_kendrew/ui_calendar.dart';
 
 import 'global_var.dart';
-
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,6 +44,7 @@ void main() {
         primaryColor: secondaryColor,
       ),
       home: const MyApp(),
+      // home: const CalendarSf(),
     ),
   );
 }
@@ -59,6 +61,11 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    getAuthPref().whenComplete(() {
+      debugPrint(userID);
+      debugPrint("$userStatus");
+      setState(() {});
+    });
   }
 
   @override
@@ -67,8 +74,26 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 
+  Future<void> setAuthPref(String userID, int userStatus) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userID', userID);
+    await prefs.setInt('userStatus', userStatus);
+  }
+
+  Future<void> getAuthPref() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    userID = prefs.getString('userID') ?? "";
+    userStatus = prefs.getInt('userStatus') ?? 0;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const LoginPage();
+    Future.delayed(const Duration(seconds: 1));
+    if (userID != "" && userStatus != 0) {
+      return const HomePage();
+    } else {
+      return const LoginPage();
+    }
   }
 }

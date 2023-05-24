@@ -190,7 +190,7 @@ class _ReadJadwalPageState extends State<ReadJadwalPage> {
                           fontSize: 16,
                         ),
                       ),
-                      SizedBox(height: 5),
+                      const SizedBox(height: 5),
                       Text(
                         "Felmel@gmail.com",
                         style: GoogleFonts.notoSans(
@@ -269,7 +269,7 @@ class _ReadJadwalPageState extends State<ReadJadwalPage> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 40),
+                  const SizedBox(height: 40),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -281,7 +281,7 @@ class _ReadJadwalPageState extends State<ReadJadwalPage> {
                           fontSize: 15,
                         ),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -506,7 +506,7 @@ class _EditDepenPageState extends State<EditDepenPage> {
                           fontSize: 16,
                         ),
                       ),
-                      SizedBox(height: 5),
+                      const SizedBox(height: 5),
                       Text(
                         "Felmel@gmail.com",
                         style: GoogleFonts.notoSans(
@@ -585,7 +585,7 @@ class _EditDepenPageState extends State<EditDepenPage> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 40),
+                  const SizedBox(height: 40),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -597,7 +597,7 @@ class _EditDepenPageState extends State<EditDepenPage> {
                           fontSize: 15,
                         ),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -677,9 +677,9 @@ class _EditDepenPageState extends State<EditDepenPage> {
                                                     BorderRadius.circular(5),
                                               ),
                                               height: 40,
-                                              child: Center(
+                                              child: const Center(
                                                 child: Row(
-                                                  children: const [
+                                                  children: [
                                                     Icon(
                                                       Icons.add,
                                                       size: 20,
