@@ -3,8 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
+import 'home/service_home.dart';
+
 class CalendarSf extends StatefulWidget {
-  const CalendarSf({super.key});
+  final String uid;
+  const CalendarSf({super.key, required this.uid});
 
   @override
   State<CalendarSf> createState() => _CalendarSfState();
@@ -12,6 +15,7 @@ class CalendarSf extends StatefulWidget {
 
 class _CalendarSfState extends State<CalendarSf> {
   List<Appointment> itemList = List.empty(growable: true);
+  HomeService homeService = HomeService();
 
   @override
   void initState() {
@@ -89,6 +93,7 @@ class _CalendarSfState extends State<CalendarSf> {
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
     return Scaffold(
+      appBar: AppBar(),
       body: SfCalendar(
         dataSource: AppointmentDataSource(itemList),
         view: CalendarView.month,
