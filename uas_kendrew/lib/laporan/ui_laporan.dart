@@ -1032,7 +1032,44 @@ class _ImageLaporanPageState extends State<ImageLaporanPage> {
           padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text(
+                "Gambar",
+                style: GoogleFonts.notoSans(
+                  color: darkText,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                ),
+              ),
+              SizedBox(height: 8),
+              Expanded(
+                  child: GridView.count(
+                crossAxisCount: 3,
+                mainAxisSpacing: 5,
+                  crossAxisSpacing: 5,
+                children: List.generate(3, (index) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage("lib/assets/images/logo.jpg"),
+                        fit: BoxFit.cover,
+                      ),
+                      border: Border.all(),
+                    ),
+                  );
+                }),
+              )),
+              SizedBox(height: 25),
+              Text(
+                "Tambah Gambar",
+                style: GoogleFonts.notoSans(
+                  color: darkText,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                ),
+              ),
+              SizedBox(height: 8),
               Expanded(
                 child: GridView.count(
                   crossAxisCount: 3,
@@ -1043,20 +1080,23 @@ class _ImageLaporanPageState extends State<ImageLaporanPage> {
                     return Stack(
                       children: [
                         AssetThumb(
-                        asset: asset,
-                        width: 300,
-                        height: 300,
-                      ),
-                      Positioned(
-                        top: 1,
-                        right: 1,
-                        child: IconButton(
-                          icon: Icon(Icons.delete, color: lightText,),
-                          onPressed: () {
-                            _deleteImage(index);
-                          },
+                          asset: asset,
+                          width: 300,
+                          height: 300,
                         ),
-                      ),
+                        Positioned(
+                          top: 1,
+                          right: 1,
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.delete,
+                              color: lightText,
+                            ),
+                            onPressed: () {
+                              _deleteImage(index);
+                            },
+                          ),
+                        ),
                       ],
                     );
                   }),

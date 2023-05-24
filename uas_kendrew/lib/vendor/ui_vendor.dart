@@ -1793,7 +1793,38 @@ class _ImagePembayaranPageState extends State<ImagePembayaranPage> {
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Text(
+                    "Bukti Pembayaran",
+                    style: GoogleFonts.notoSans(
+                      color: darkText,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Container(
+                    width: 250,
+                    height: 250,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage("lib/assets/images/logo.jpg"),
+                        fit: BoxFit.cover,
+                      ),
+                      border: Border.all(),
+                    ),
+                  ),
+                  SizedBox(height: 25),
+                  Text(
+                    "Tambah Gambar Pembayaran",
+                    style: GoogleFonts.notoSans(
+                      color: darkText,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                    ),
+                  ),
+                  SizedBox(height: 8),
                   Center(
                     child: Container(
                       width: deviceWidth,
@@ -1841,21 +1872,23 @@ class _ImagePembayaranPageState extends State<ImagePembayaranPage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  ElevatedButton(
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.all(15),
-                      backgroundColor: buttonColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                  Center(
+                    child: ElevatedButton(
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.all(15),
+                        backgroundColor: buttonColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
-                    ),
-                    onPressed: () {},
-                    child: Text(
-                      "Simpan",
-                      style: GoogleFonts.notoSans(
-                        color: lightText,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
+                      onPressed: () {},
+                      child: Text(
+                        "Simpan",
+                        style: GoogleFonts.notoSans(
+                          color: lightText,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                        ),
                       ),
                     ),
                   ),

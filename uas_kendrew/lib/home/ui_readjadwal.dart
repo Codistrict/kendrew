@@ -677,7 +677,7 @@ class _EditDepenPageState extends State<EditDepenPage> {
                                                     BorderRadius.circular(5),
                                               ),
                                               height: 40,
-                                              child: const Center(
+                                              child: Center(
                                                 child: Row(
                                                   children: [
                                                     Icon(
