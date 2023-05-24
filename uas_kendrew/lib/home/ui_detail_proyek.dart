@@ -17,6 +17,7 @@ import '../global_var.dart';
 import '../themes/floatingactionwidget.dart';
 
 int angkacek = 1;
+int headercek = 0;
 
 int _jumlahLantai = 0;
 int _luasTanah = 0;
@@ -60,6 +61,7 @@ class _DetailPageState extends State<DetailPage> {
         _luasTanah = int.parse("${element['luas_tanah']}");
         _penanggungJawab = "${element['penangung_jawab']}";
         angkacek = int.parse("${element['status_penawaran']}");
+        headercek = int.parse("${element['status_header_penawaran']}");
       }
     } else {
       throw "Gagal Mengambil Data";
@@ -609,8 +611,9 @@ class _DetailPageState extends State<DetailPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            BuatPenawaranPage(uid: widget.uid),
+                        builder: (context) => headercek == 0
+                            ? BuatPenawaranPage(uid: widget.uid)
+                            : BuatPenawaran2Page(uid: widget.uid),
                       ),
                     );
                   },
@@ -638,7 +641,7 @@ class _DetailPageState extends State<DetailPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const JadwalPage(),
+                        builder: (context) =>  JadwalPage(uid: widget.uid),
                       ),
                     );
                   },
@@ -2570,7 +2573,7 @@ class _BuatPenawaran3PageState extends State<BuatPenawaran3Page> {
     String harga = "";
     String total = "";
     String keterangan = "";
-     for (var element in listPekerjaan) {
+    for (var element in listPekerjaan) {
       subPekerjaan += "|${element[0]}|";
       jumlah += "|${element[1]}|";
       harga += "|${element[2]}|";

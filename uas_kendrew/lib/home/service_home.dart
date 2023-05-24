@@ -151,4 +151,95 @@ class HomeService {
       return "Couldn't connect to the server, failed to fetch API!";
     }
   }
+
+  Future readJudulPenawaran(idProyek) async {
+    var url =
+        Uri.parse("$apiPath/PJDL/read-judul-penawaran?id_proyek=$idProyek");
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      var status = json.decode(response.body)['status'];
+      var message = json.decode(response.body)['message'];
+      var body = json.decode(response.body)['data'];
+      return [status, message, body];
+    } else {
+      return "Couldn't connect to the server, failed to fetch API!";
+    }
+  }
+
+  Future readTaskPenawaran(idProyek, idPenawaran) async {
+    var url = Uri.parse(
+        "$apiPath/PJDL/read-task?id_proyek=$idProyek&id_penawaran=$idPenawaran");
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      var status = json.decode(response.body)['status'];
+      var message = json.decode(response.body)['message'];
+      var body = json.decode(response.body)['data'];
+      return [status, message, body];
+    } else {
+      return "Couldn't connect to the server, failed to fetch API!";
+    }
+  }
+
+  Future inputDepedentcies(idPenjadwalan, depedentcies) async {
+    var url = Uri.parse("$apiPath/PJDL/input-depedentcies");
+    final response = await http.put(url, body: {
+      'id_jadwal': idPenjadwalan,
+      'depedentcies': depedentcies,
+    });
+    if (response.statusCode == 200) {
+      var status = json.decode(response.body)['status'];
+      var message = json.decode(response.body)['message'];
+      var body = json.decode(response.body)['data'];
+      return [status, message, body];
+    } else {
+      return "Couldn't connect to the server, failed to fetch API!";
+    }
+  }
+
+  Future inputTaskPenawaran(idPenjadwalan, ipProyek, namaTask, waktuOptimis,
+      waktuPesimis, waktuRealistis) async {
+    var url = Uri.parse("$apiPath/PJDL/input-task-penjadwalan");
+    final response = await http.post(url, body: {
+      'id_penawaran': idPenjadwalan,
+      'id_proyek': ipProyek,
+      'nama_task': namaTask,
+      'waktu_optimis': waktuOptimis,
+      'waktu_pesimis': waktuPesimis,
+      'waktu_realistis': waktuRealistis,
+    });
+    if (response.statusCode == 200) {
+      var status = json.decode(response.body)['status'];
+      var message = json.decode(response.body)['message'];
+      var body = json.decode(response.body)['data'];
+      return [status, message, body];
+    } else {
+      return "Couldn't connect to the server, failed to fetch API!";
+    }
+  }
+
+  Future readDep(ipProyeks) async {
+    var url = Uri.parse("$apiPath/PJDL/read-dep?id_proyek=$ipProyeks");
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      var status = json.decode(response.body)['status'];
+      var message = json.decode(response.body)['message'];
+      var body = json.decode(response.body)['data'];
+      return [status, message, body];
+    } else {
+      return "Couldn't connect to the server, failed to fetch API!";
+    }
+  }
+
+  Future generateJadwal(ipProyeks) async {
+    var url = Uri.parse("$apiPath/PJDL/generate-jadwal?id_proyek=$ipProyeks");
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      var status = json.decode(response.body)['status'];
+      var message = json.decode(response.body)['message'];
+      var body = json.decode(response.body)['data'];
+      return [status, message, body];
+    } else {
+      return "Couldn't connect to the server, failed to fetch API!";
+    }
+  }
 }
