@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:uas_kendrew/themes/colors.dart';
 
 import '../themes/floatingactionwidget.dart';
@@ -643,7 +644,15 @@ class _LaporanVendorPageState extends State<LaporanVendorPage> {
                                   ),
                                   const SizedBox(width: 5),
                                   GestureDetector(
-                                    onTap: () {},
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const ImageLaporanVendorPage(),
+                                        ),
+                                      );
+                                    },
                                     child: Container(
                                       width: 40,
                                       decoration: BoxDecoration(
@@ -678,6 +687,266 @@ class _LaporanVendorPageState extends State<LaporanVendorPage> {
         ));
   }
 }
+
+class ImageLaporanVendorPage extends StatefulWidget {
+  const ImageLaporanVendorPage({super.key});
+
+  @override
+  State<ImageLaporanVendorPage> createState() => _ImageLaporanVendorPageState();
+}
+
+class _ImageLaporanVendorPageState extends State<ImageLaporanVendorPage> {
+  List<Asset> _selectedImages = [];
+
+  Future<void> _pickImages() async {
+    List<Asset> resultList = [];
+    String error = '';
+
+    try {
+      resultList = await MultiImagePicker.pickImages(
+        maxImages: 10,
+        enableCamera: true,
+        selectedAssets: _selectedImages,
+      );
+    } catch (e) {
+      error = e.toString();
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      _selectedImages = resultList;
+      if (error.isNotEmpty) {
+        // Handle error if necessary
+      }
+    });
+  }
+
+  void _deleteImage(int index) {
+    setState(() {
+      _selectedImages.removeAt(index);
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final deviceWidth = MediaQuery.of(context).size.width;
+    final deviceHeight = MediaQuery.of(context).size.height;
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: lightText,
+        //diisi warna nek wes sesuai
+        automaticallyImplyLeading: false,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Icon(
+                    Icons.arrow_back_ios,
+                    color: darkText,
+                    size: 50,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Kendrew Tandiono",
+                      style: GoogleFonts.notoSans(
+                        color: darkText,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      "Felmel@gmail.com",
+                      style: GoogleFonts.notoSans(
+                        color: darkText,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(right: 14),
+                ),
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(360),
+                    ),
+                  ),
+                  child: Image.asset("lib/assets/images/defaultprofile.png"),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(right: 10),
+                ),
+              ],
+            ),
+          ],
+        ),
+        //elevation: 0,
+        bottom: const PreferredSize(
+          preferredSize: Size.fromHeight(10),
+          child: Divider(
+            thickness: 3,
+            color: darkText,
+          ),
+        ),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Gambar",
+                style: GoogleFonts.notoSans(
+                  color: darkText,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                ),
+              ),
+              SizedBox(height: 8),
+              Expanded(
+                  child: GridView.count(
+                crossAxisCount: 3,
+                mainAxisSpacing: 5,
+                  crossAxisSpacing: 5,
+                children: List.generate(3, (index) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage("lib/assets/images/logo.jpg"),
+                        fit: BoxFit.cover,
+                      ),
+                      border: Border.all(),
+                    ),
+                  );
+                }),
+              )),
+              SizedBox(height: 25),
+              Text(
+                "Tambah Gambar",
+                style: GoogleFonts.notoSans(
+                  color: darkText,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                ),
+              ),
+              SizedBox(height: 8),
+              Expanded(
+                child: GridView.count(
+                  crossAxisCount: 3,
+                  mainAxisSpacing: 5,
+                  crossAxisSpacing: 5,
+                  children: List.generate(_selectedImages.length, (index) {
+                    Asset asset = _selectedImages[index];
+                    return Stack(
+                      children: [
+                        AssetThumb(
+                          asset: asset,
+                          width: 300,
+                          height: 300,
+                        ),
+                        Positioned(
+                          top: 1,
+                          right: 1,
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.delete,
+                              color: lightText,
+                            ),
+                            onPressed: () {
+                              _deleteImage(index);
+                            },
+                          ),
+                        ),
+                      ],
+                    );
+                  }),
+                ),
+              ),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.all(15),
+                      backgroundColor: buttonColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: _pickImages,
+                    child: Text(
+                      "Upload Gambar",
+                      style: GoogleFonts.notoSans(
+                        color: lightText,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 20),
+                  ElevatedButton(
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.all(15),
+                      backgroundColor: buttonColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () {},
+                    child: Text(
+                      "Simpan",
+                      style: GoogleFonts.notoSans(
+                        color: lightText,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 
 class BuatLaporanVendorPage extends StatefulWidget {
   const BuatLaporanVendorPage({super.key});
