@@ -2570,7 +2570,7 @@ class _BuatPenawaran3PageState extends State<BuatPenawaran3Page> {
     String harga = "";
     String total = "";
     String keterangan = "";
-     for (var element in listPekerjaan) {
+    for (var element in listPekerjaan) {
       subPekerjaan += "|${element[0]}|";
       jumlah += "|${element[1]}|";
       harga += "|${element[2]}|";
