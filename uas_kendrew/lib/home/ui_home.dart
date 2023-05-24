@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uas_kendrew/home/service_home.dart';
 import 'package:uas_kendrew/home/ui_detail_proyek.dart';
+import 'package:uas_kendrew/login/ui_login.dart';
 import 'package:uas_kendrew/themes/colors.dart';
 
+import '../global_var.dart';
 import '../themes/floatingactionwidget.dart';
 
 class HomePage extends StatefulWidget {
@@ -17,14 +20,22 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late Future getAllProyek;
-  ServicesHome servicesUserHome = ServicesHome();
+  HomeService homeService = HomeService();
+  late Future allProject;
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+  }
 
   @override
   void initState() {
     // TODO: implement initState
-    getAllProyek = servicesUserHome.getProyek();
+
     super.initState();
+    // Read all project
+    allProject = homeService.readProject();
   }
 
   @override
@@ -32,6 +43,40 @@ class _HomePageState extends State<HomePage> {
     // TODO: implement dispose
     super.dispose();
   }
+
+  // ========== Write/Read SharedPref ========== //
+  Future<void> setAuthPref(String userID, int userStatus) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userID', userID);
+    await prefs.setInt('userStatus', userStatus);
+  }
+
+  Future<void> getAuthPref() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    userID = prefs.getString('userID') ?? "";
+    userStatus = prefs.getInt('userStatus') ?? 0;
+  }
+  // ========== Write/Read SharedPref ========== //
+
+  // ========== Func Finish Project ========== //
+  Future finishProject(context, projectID) async {
+    var response = await homeService.finishProject(projectID);
+    if (response[0] == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            response[1],
+            overflow: TextOverflow.ellipsis,
+            softWrap: true,
+          ),
+        ),
+      );
+      allProject =
+          homeService.readProject().whenComplete(() => setState(() {}));
+    } else {}
+  }
+  // ========== Func Finish Project ========== //
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +86,33 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: CustomFAB(
         icon: AnimatedIcons.menu_close,
         children: [
+          SpeedDialChild(
+              child: const Icon(
+                Icons.exit_to_app,
+                color: lightText,
+              ),
+              backgroundColor: buttonColor,
+              onTap: () {
+                setAuthPref("", 0).whenComplete(() {
+                  getAuthPref().whenComplete(() {
+                    debugPrint(userID);
+                    debugPrint("$userStatus");
+                  });
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginPage(),
+                    ),
+                  );
+                });
+              },
+              label: 'Logout',
+              labelStyle: GoogleFonts.inter(
+                fontSize: 16,
+                color: lightText,
+                fontWeight: FontWeight.w500,
+              ),
+              labelBackgroundColor: buttonColor),
           SpeedDialChild(
               child: const Icon(
                 Icons.add,
@@ -98,7 +170,7 @@ class _HomePageState extends State<HomePage> {
                     fontSize: 16,
                   ),
                 ),
-                SizedBox(height: 5),
+                const SizedBox(height: 5),
                 Text(
                   "Felmel@gmail.com",
                   style: GoogleFonts.notoSans(
@@ -137,128 +209,153 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       body: Padding(
-          padding: const EdgeInsets.fromLTRB(25, 35, 25, 30),
-          child: FutureBuilder(
-            future: getAllProyek,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                List snapData = snapshot.data! as List;
-                if (snapData[0] != 404) {
-                  return ScrollConfiguration(
-                    behavior: ScrollConfiguration.of(context).copyWith(
-                      dragDevices: {
-                        PointerDeviceKind.touch,
-                        PointerDeviceKind.mouse,
-                      },
-                    ),
-                    child: GridView.builder(
-                      itemCount: snapData[1].length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              childAspectRatio: 6 / 3.5,
-                              crossAxisSpacing: 20,
-                              mainAxisSpacing: 20),
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DetailPage(myId: snapData[1][index]['id_proyek'].toString(), myNamaProyek: snapData[1][index]['nama_proyek'].toString()),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: darkText,
-                                ),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(8))),
-                            child: Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      width: double.infinity,
-                                      decoration: const BoxDecoration(
-                                          image: DecorationImage(
-                                              image: AssetImage(
-                                                  "lib/assets/images/back.jpeg"),
-                                              fit: BoxFit.cover),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(8))),
-                                    ),
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        snapData[1][index]['nama_proyek'],
-                                        style: GoogleFonts.notoSans(
-                                          fontSize: 14,
-                                          color: darkText,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      PopupMenuButton(
-                                          color: buttonColor,
-                                          itemBuilder: (context) {
-                                            return [
-                                              PopupMenuItem<int>(
-                                                value: 0,
-                                                child: Text(
-                                                  "Done",
-                                                  style: GoogleFonts.notoSans(
-                                                    fontSize: 13,
-                                                    color: lightText,
-                                                    fontWeight: FontWeight.w700,
-                                                  ),
-                                                ),
-                                              ),
-                                              PopupMenuItem<int>(
-                                                value: 1,
-                                                child: Text(
-                                                  "Edit",
-                                                  style: GoogleFonts.notoSans(
-                                                    fontSize: 13,
-                                                    color: lightText,
-                                                    fontWeight: FontWeight.w700,
-                                                  ),
-                                                ),
-                                              ),
-                                            ];
-                                          },
-                                          onSelected: (value) {}),
-                                    ],
-                                  ),
-                                  Text(
-                                    snapData[1][index]['penanggungjawab'].toString(),
-                                    style: GoogleFonts.notoSans(
-                                      fontSize: 12,
-                                      color: darkText,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ],
+        padding: const EdgeInsets.fromLTRB(25, 35, 25, 30),
+        child: FutureBuilder(
+          future: allProject,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              List snapData = snapshot.data! as List;
+              if (snapData[0] != 404) {
+                return ScrollConfiguration(
+                  behavior: ScrollConfiguration.of(context).copyWith(
+                    dragDevices: {
+                      PointerDeviceKind.touch,
+                      PointerDeviceKind.mouse,
+                    },
+                  ),
+                  child: GridView.builder(
+                    itemCount: snapData[2].length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            childAspectRatio: 6 / 3.5,
+                            crossAxisSpacing: 20,
+                            mainAxisSpacing: 20),
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DetailPage(
+                                uid: snapData[2][index]['id_proyek'],
+                                namaProyek: snapData[2][index]['nama_proyek'],
                               ),
                             ),
+                          ).whenComplete(
+                            () => allProject = homeService
+                                .readProject()
+                                .whenComplete(() => setState(() {})),
+                          );
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                color: darkText,
+                              ),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(8))),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    width: double.infinity,
+                                    decoration: const BoxDecoration(
+                                        image: DecorationImage(
+                                            image: AssetImage(
+                                                "lib/assets/images/back.jpeg"),
+                                            fit: BoxFit.cover),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(8))),
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      snapData[2][index]['nama_proyek'],
+                                      style: GoogleFonts.notoSans(
+                                        fontSize: 14,
+                                        color: darkText,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    PopupMenuButton(
+                                        color: buttonColor,
+                                        itemBuilder: (context) {
+                                          return [
+                                            PopupMenuItem<int>(
+                                              onTap: () {
+                                                finishProject(
+                                                    context,
+                                                    snapData[2][index]
+                                                        ['id_proyek']);
+                                              },
+                                              value: 0,
+                                              child: Text(
+                                                "Done",
+                                                style: GoogleFonts.notoSans(
+                                                  fontSize: 13,
+                                                  color: lightText,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                            ),
+                                            PopupMenuItem<int>(
+                                              onTap: () {},
+                                              value: 1,
+                                              child: Text(
+                                                "Edit",
+                                                style: GoogleFonts.notoSans(
+                                                  fontSize: 13,
+                                                  color: lightText,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                            ),
+                                          ];
+                                        },
+                                        onSelected: (value) {}),
+                                  ],
+                                ),
+                                Text(
+                                  snapData[2][index]['penanggungjawab']
+                                      .toString(),
+                                  style: GoogleFonts.notoSans(
+                                    fontSize: 12,
+                                    color: darkText,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        );
-                      },
-                    ),
-                  );
-                }
+                        ),
+                      );
+                    },
+                  ),
+                );
+              } else {
+                const Center(
+                  child: Text(
+                    "Currently no project",
+                    overflow: TextOverflow.ellipsis,
+                    softWrap: true,
+                  ),
+                );
               }
-              return Column();
-            },
-          )),
+            }
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        ),
+      ),
     );
   }
 }
@@ -271,12 +368,12 @@ class BuatProjekPage extends StatefulWidget {
 }
 
 class _BuatProjekPageState extends State<BuatProjekPage> {
-  final _controllerNamaProyek = TextEditingController();
-  final _controllerLuasTanahProyek = TextEditingController();
-  final _controllerJumlahLantaiProyek = TextEditingController();
-  final _controllerNamaPenanggungJawabProyek = TextEditingController();
+  HomeService homeService = HomeService();
 
-  ServicesHome servicesUserHome = ServicesHome();
+  final ctrlNamaProyek = TextEditingController();
+  final ctrlJumlahLantai = TextEditingController();
+  final ctrlLuasTanah = TextEditingController();
+  final ctrlPenanggungJawab = TextEditingController();
 
   @override
   void initState() {
@@ -288,28 +385,51 @@ class _BuatProjekPageState extends State<BuatProjekPage> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+    ctrlNamaProyek.dispose();
+    ctrlJumlahLantai.dispose();
+    ctrlLuasTanah.dispose();
+    ctrlPenanggungJawab.dispose();
   }
 
-  Future postProyek(
-      id_user, nama_proyek, jumlah_lantai, luas_tanah, nama, context) async {
-    var response = await servicesUserHome.inputProyek(
-      id_user,
-      nama_proyek,
-      jumlah_lantai,
-      luas_tanah,
-      nama,
+  // ========== Func Create Project ========== //
+  Future createProject(
+      context,
+      userID,
+      TextEditingController namaProyek,
+      TextEditingController jumlahLantai,
+      TextEditingController luasTanah,
+      TextEditingController penanggungJawab) async {
+    var response = await homeService.createProject(
+      userID,
+      namaProyek.text,
+      jumlahLantai.text,
+      luasTanah.text,
+      penanggungJawab.text,
     );
-
-    if (response[0] != 404) {
-      return true;
-    } else {
+    if (response[0] == 200) {
+      Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(response[1]),
+          content: Text(
+            response[1],
+            overflow: TextOverflow.ellipsis,
+            softWrap: true,
+          ),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Failed to create project",
+            overflow: TextOverflow.ellipsis,
+            softWrap: true,
+          ),
         ),
       );
     }
   }
+  // ========== Func Create Project ========== //
 
   TextFieldYa(text) {
     return TextField(
@@ -435,7 +555,7 @@ class _BuatProjekPageState extends State<BuatProjekPage> {
                           fontSize: 16,
                         ),
                       ),
-                      SizedBox(height: 5),
+                      const SizedBox(height: 5),
                       Text(
                         "Felmel@gmail.com",
                         style: GoogleFonts.notoSans(
@@ -497,12 +617,12 @@ class _BuatProjekPageState extends State<BuatProjekPage> {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            SizedBox(height: 5),
-                            TextFieldYa(_controllerNamaProyek),
+                            const SizedBox(height: 5),
+                            TextFieldYa(ctrlNamaProyek),
                           ],
                         ),
                       ),
-                      SizedBox(width: 15),
+                      const SizedBox(width: 15),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -515,14 +635,14 @@ class _BuatProjekPageState extends State<BuatProjekPage> {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            SizedBox(height: 5),
-                            TextFieldYa2(_controllerJumlahLantaiProyek),
+                            const SizedBox(height: 5),
+                            TextFieldYa2(ctrlJumlahLantai),
                           ],
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Row(
                     children: [
                       Expanded(
@@ -537,12 +657,12 @@ class _BuatProjekPageState extends State<BuatProjekPage> {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            SizedBox(height: 5),
-                            TextFieldYa2(_controllerLuasTanahProyek),
+                            const SizedBox(height: 5),
+                            TextFieldYa2(ctrlLuasTanah),
                           ],
                         ),
                       ),
-                      SizedBox(width: 15),
+                      const SizedBox(width: 15),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -555,48 +675,41 @@ class _BuatProjekPageState extends State<BuatProjekPage> {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            SizedBox(height: 5),
-                            TextFieldYa(_controllerNamaPenanggungJawabProyek),
+                            const SizedBox(height: 5),
+                            TextFieldYa(ctrlPenanggungJawab),
                           ],
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 100),
+                  const SizedBox(height: 100),
                   Align(
                     alignment: Alignment.bottomRight,
                     child: ElevatedButton(
                       style: TextButton.styleFrom(
-                        padding: EdgeInsets.fromLTRB(30, 17, 30, 17),
+                        padding: const EdgeInsets.fromLTRB(30, 17, 30, 17),
                         backgroundColor: buttonColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
                       onPressed: () {
-                        if (_controllerNamaProyek.text != "" &&
-                            _controllerJumlahLantaiProyek.text != "" &&
-                            _controllerLuasTanahProyek.text != "" &&
-                            _controllerNamaPenanggungJawabProyek.text != "") {
-                          setState(() {
-                            postProyek(
-                                    "US001",
-                                    _controllerNamaProyek.text,
-                                    _controllerJumlahLantaiProyek.text,
-                                    _controllerLuasTanahProyek.text,
-                                    _controllerNamaPenanggungJawabProyek.text,
-                                    context)
-                                .then((value) {
-                              _controllerNamaProyek.clear();
-                              _controllerJumlahLantaiProyek.clear();
-                              _controllerLuasTanahProyek.clear();
-                              _controllerNamaPenanggungJawabProyek.clear();
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => HomePage()),
-                              );
-                            });
+                        if (ctrlNamaProyek.text != "" &&
+                            ctrlJumlahLantai.text != "" &&
+                            ctrlLuasTanah.text != "" &&
+                            ctrlPenanggungJawab.text != "") {
+                          createProject(
+                                  context,
+                                  userID,
+                                  ctrlNamaProyek,
+                                  ctrlJumlahLantai,
+                                  ctrlLuasTanah,
+                                  ctrlPenanggungJawab)
+                              .then((value) {
+                            ctrlNamaProyek.clear();
+                            ctrlJumlahLantai.clear();
+                            ctrlLuasTanah.clear();
+                            ctrlPenanggungJawab.clear();
                           });
                         }
                       },

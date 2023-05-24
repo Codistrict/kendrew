@@ -13,6 +13,7 @@ import 'package:uas_kendrew/laporan/ui_laporanvendor.dart';
 import 'package:uas_kendrew/themes/colors.dart';
 import 'package:uas_kendrew/vendor/ui_vendor.dart';
 
+import '../global_var.dart';
 import '../themes/floatingactionwidget.dart';
 
 int angkacek = 1;
@@ -22,26 +23,26 @@ int _luasTanah = 0;
 String _penanggungJawab = "";
 
 class DetailPage extends StatefulWidget {
-  final String myId;
-  final String myNamaProyek;
-  const DetailPage({Key? key, required this.myId, required this.myNamaProyek})
-      : super(key: key);
+  final String uid;
+  final String namaProyek;
+  const DetailPage({
+    Key? key,
+    required this.uid,
+    required this.namaProyek,
+  }) : super(key: key);
 
   @override
   State<DetailPage> createState() => _DetailPageState();
 }
 
 class _DetailPageState extends State<DetailPage> {
-  late String myId;
-  late String myNamaProyek;
-  ServicesHome servicesUserDetail = ServicesHome();
+  HomeService homeService = HomeService();
 
   @override
   void initState() {
     // TODO: implement initState
-    myId = widget.myId;
-    myNamaProyek = widget.myNamaProyek;
-    _getDetail(myId);
+
+    _getDetail(widget.uid).whenComplete(() => setState(() {}));
     super.initState();
   }
 
@@ -51,13 +52,14 @@ class _DetailPageState extends State<DetailPage> {
     super.dispose();
   }
 
-  Future _getDetail(id) async {
-    var response = await servicesUserDetail.getDetailProyek(id);
+  Future _getDetail(uid) async {
+    var response = await homeService.readDetailProject(uid);
     if (response[0] != 404) {
-      for (var element in response[1]) {
+      for (var element in response[2]) {
         _jumlahLantai = int.parse("${element['jumlah_lantai']}");
         _luasTanah = int.parse("${element['luas_tanah']}");
         _penanggungJawab = "${element['penangung_jawab']}";
+        angkacek = int.parse("${element['status_penawaran']}");
       }
     } else {
       throw "Gagal Mengambil Data";
@@ -91,7 +93,7 @@ class _DetailPageState extends State<DetailPage> {
                 ),
                 const SizedBox(width: 10),
                 Text(
-                  myNamaProyek,
+                  widget.namaProyek,
                   style: GoogleFonts.notoSans(
                     color: darkText,
                     fontWeight: FontWeight.w400,
@@ -114,7 +116,7 @@ class _DetailPageState extends State<DetailPage> {
                         fontSize: 16,
                       ),
                     ),
-                    SizedBox(height: 5),
+                    const SizedBox(height: 5),
                     Text(
                       "Felmel@gmail.com",
                       style: GoogleFonts.notoSans(
@@ -166,231 +168,303 @@ class _DetailPageState extends State<DetailPage> {
                     flex: 1,
                     child: Column(
                       children: [
-                        Container(
-                          padding: EdgeInsets.all(15),
-                          decoration: const BoxDecoration(
-                              color: cardColor,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8))),
-                          child: Row(
+                        Visibility(
+                          visible: userStatus != 3 ? true : false,
+                          child: Column(
                             children: [
-                              Icon(Icons.people_alt),
-                              SizedBox(width: 15),
-                              Text(
-                                "Tagihan",
-                                style: GoogleFonts.notoSans(
-                                  color: darkText,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 11,
+                              GestureDetector(
+                                onTap: () {},
+                                child: Container(
+                                  padding: const EdgeInsets.all(15),
+                                  decoration: const BoxDecoration(
+                                      color: cardColor,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(8))),
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.people_alt),
+                                      const SizedBox(width: 15),
+                                      Text(
+                                        "Tagihan",
+                                        style: GoogleFonts.notoSans(
+                                          color: darkText,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
+                              const SizedBox(height: 20),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 20),
-                        Container(
-                          padding: EdgeInsets.all(15),
-                          decoration: const BoxDecoration(
-                              color: cardColor,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8))),
-                          child: Row(
+                        Visibility(
+                          visible: userStatus != 3 ? true : false,
+                          child: Column(
                             children: [
-                              Icon(Icons.people_alt),
-                              SizedBox(width: 15),
-                              Text(
-                                "Budgeting",
-                                style: GoogleFonts.notoSans(
-                                  color: darkText,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 11,
+                              GestureDetector(
+                                onTap: () {},
+                                child: Container(
+                                  padding: const EdgeInsets.all(15),
+                                  decoration: const BoxDecoration(
+                                      color: cardColor,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(8))),
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.people_alt),
+                                      const SizedBox(width: 15),
+                                      Text(
+                                        "Budgeting",
+                                        style: GoogleFonts.notoSans(
+                                          color: darkText,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
+                              const SizedBox(height: 20),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 20),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const VendorPage(),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            padding: EdgeInsets.all(15),
-                            decoration: const BoxDecoration(
-                                color: cardColor,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(8))),
-                            child: Row(
-                              children: [
-                                Icon(Icons.people_alt),
-                                SizedBox(width: 15),
-                                Text(
-                                  "Vendor",
-                                  style: GoogleFonts.notoSans(
-                                    color: darkText,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 11,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const LaporanVendorPage(),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            padding: EdgeInsets.all(15),
-                            decoration: const BoxDecoration(
-                                color: cardColor,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(8))),
-                            child: Row(
-                              children: [
-                                Icon(Icons.people_alt),
-                                SizedBox(width: 15),
-                                Text(
-                                  "Laporan Vendor",
-                                  style: GoogleFonts.notoSans(
-                                    color: darkText,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 11,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Container(
-                          padding: EdgeInsets.all(15),
-                          decoration: const BoxDecoration(
-                              color: cardColor,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8))),
-                          child: Row(
+                        Visibility(
+                          visible: userStatus != 3 ? true : false,
+                          child: Column(
                             children: [
-                              Icon(Icons.people_alt),
-                              SizedBox(width: 15),
-                              Text(
-                                "Analisa",
-                                style: GoogleFonts.notoSans(
-                                  color: darkText,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 11,
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => VendorPage(
+                                        uid: widget.uid,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(15),
+                                  decoration: const BoxDecoration(
+                                      color: cardColor,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(8))),
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.people_alt),
+                                      const SizedBox(width: 15),
+                                      Text(
+                                        "Vendor",
+                                        style: GoogleFonts.notoSans(
+                                          color: darkText,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
+                              const SizedBox(height: 20),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 20),
-                        Container(
-                          padding: EdgeInsets.all(15),
-                          decoration: const BoxDecoration(
-                              color: cardColor,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8))),
-                          child: Row(
+                        Visibility(
+                          visible: true,
+                          child: Column(
                             children: [
-                              Icon(Icons.people_alt),
-                              SizedBox(width: 15),
-                              Text(
-                                "Penawaran",
-                                style: GoogleFonts.notoSans(
-                                  color: darkText,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 11,
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const LaporanVendorPage(),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(15),
+                                  decoration: const BoxDecoration(
+                                      color: cardColor,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(8))),
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.people_alt),
+                                      const SizedBox(width: 15),
+                                      Text(
+                                        "Laporan Vendor",
+                                        style: GoogleFonts.notoSans(
+                                          color: darkText,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
+                              const SizedBox(height: 20),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 20),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const ReadJadwalPage(),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            padding: EdgeInsets.all(15),
-                            decoration: const BoxDecoration(
-                                color: cardColor,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(8))),
-                            child: Row(
-                              children: [
-                                Icon(Icons.people_alt),
-                                SizedBox(width: 15),
-                                Text(
-                                  "Jadwal",
-                                  style: GoogleFonts.notoSans(
-                                    color: darkText,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 11,
+                        Visibility(
+                          visible: userStatus != 3 ? true : false,
+                          child: Column(
+                            children: [
+                              GestureDetector(
+                                onTap: () {},
+                                child: Container(
+                                  padding: const EdgeInsets.all(15),
+                                  decoration: const BoxDecoration(
+                                      color: cardColor,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(8))),
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.people_alt),
+                                      const SizedBox(width: 15),
+                                      Text(
+                                        "Analisa",
+                                        style: GoogleFonts.notoSans(
+                                          color: darkText,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                              const SizedBox(height: 20),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 20),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const LaporanPage(),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            padding: EdgeInsets.all(15),
-                            decoration: const BoxDecoration(
-                                color: cardColor,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(8))),
-                            child: Row(
-                              children: [
-                                Icon(Icons.people_alt),
-                                SizedBox(width: 15),
-                                Text(
-                                  "Laporan",
-                                  style: GoogleFonts.notoSans(
-                                    color: darkText,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 11,
+                        Visibility(
+                          visible: userStatus != 3 ? true : false,
+                          child: Column(
+                            children: [
+                              GestureDetector(
+                                onTap: () {},
+                                child: Container(
+                                  padding: const EdgeInsets.all(15),
+                                  decoration: const BoxDecoration(
+                                      color: cardColor,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(8))),
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.people_alt),
+                                      const SizedBox(width: 15),
+                                      Text(
+                                        "Penawaran",
+                                        style: GoogleFonts.notoSans(
+                                          color: darkText,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                              const SizedBox(height: 20),
+                            ],
+                          ),
+                        ),
+                        Visibility(
+                          visible: userStatus != 2 ? true : false,
+                          child: Column(
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const ReadJadwalPage(),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(15),
+                                  decoration: const BoxDecoration(
+                                      color: cardColor,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(8))),
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.people_alt),
+                                      const SizedBox(width: 15),
+                                      Text(
+                                        "Jadwal",
+                                        style: GoogleFonts.notoSans(
+                                          color: darkText,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                            ],
+                          ),
+                        ),
+                        Visibility(
+                          visible: userStatus != 2 ? true : false,
+                          child: Column(
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const LaporanPage(),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(15),
+                                  decoration: const BoxDecoration(
+                                      color: cardColor,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(8))),
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.people_alt),
+                                      const SizedBox(width: 15),
+                                      Text(
+                                        "Laporan",
+                                        style: GoogleFonts.notoSans(
+                                          color: darkText,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(width: 30),
+                  const SizedBox(width: 30),
                   Expanded(
                     flex: 3,
                     child: Column(
                       children: [
                         Container(
-                          padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
+                          padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
                           decoration: const BoxDecoration(
                               color: buttonColor,
                               borderRadius:
@@ -408,9 +482,9 @@ class _DetailPageState extends State<DetailPage> {
                                 child: Image.asset(
                                     "lib/assets/images/defaultprofile.png"),
                               ),
-                              SizedBox(width: 20),
+                              const SizedBox(width: 20),
                               Text(
-                                myNamaProyek,
+                                widget.namaProyek,
                                 style: GoogleFonts.notoSans(
                                   color: lightText,
                                   fontWeight: FontWeight.w500,
@@ -420,17 +494,17 @@ class _DetailPageState extends State<DetailPage> {
                             ],
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         Container(
-                          padding: EdgeInsets.fromLTRB(20, 20, 20, 50),
+                          padding: const EdgeInsets.fromLTRB(20, 20, 20, 50),
                           decoration: BoxDecoration(
                               border: Border.all(
                                 color: buttonColor,
                               ),
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(8))),
+                                  const BorderRadius.all(Radius.circular(8))),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -442,7 +516,7 @@ class _DetailPageState extends State<DetailPage> {
                                   fontSize: 20,
                                 ),
                               ),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               Row(
                                 children: [
                                   Column(
@@ -457,7 +531,7 @@ class _DetailPageState extends State<DetailPage> {
                                           fontSize: 14,
                                         ),
                                       ),
-                                      SizedBox(height: 5),
+                                      const SizedBox(height: 5),
                                       Text(
                                         "Luas Tanah",
                                         style: GoogleFonts.notoSans(
@@ -466,7 +540,7 @@ class _DetailPageState extends State<DetailPage> {
                                           fontSize: 14,
                                         ),
                                       ),
-                                      SizedBox(height: 5),
+                                      const SizedBox(height: 5),
                                       Text(
                                         "Penanggung Jawab",
                                         style: GoogleFonts.notoSans(
@@ -483,25 +557,25 @@ class _DetailPageState extends State<DetailPage> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        ": " + _jumlahLantai.toString(),
+                                        ": $_jumlahLantai",
                                         style: GoogleFonts.notoSans(
                                           color: darkText,
                                           fontWeight: FontWeight.w500,
                                           fontSize: 14,
                                         ),
                                       ),
-                                      SizedBox(height: 5),
+                                      const SizedBox(height: 5),
                                       Text(
-                                        ": " + _luasTanah.toString(),
+                                        ": $_luasTanah",
                                         style: GoogleFonts.notoSans(
                                           color: darkText,
                                           fontWeight: FontWeight.w500,
                                           fontSize: 14,
                                         ),
                                       ),
-                                      SizedBox(height: 5),
+                                      const SizedBox(height: 5),
                                       Text(
-                                        ": " + _penanggungJawab,
+                                        ": $_penanggungJawab",
                                         style: GoogleFonts.notoSans(
                                           color: darkText,
                                           fontWeight: FontWeight.w500,
@@ -525,7 +599,7 @@ class _DetailPageState extends State<DetailPage> {
                 visible: angkacek == 0 ? true : false,
                 child: ElevatedButton(
                   style: TextButton.styleFrom(
-                    padding: EdgeInsets.all(17),
+                    padding: const EdgeInsets.all(17),
                     backgroundColor: buttonColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -535,7 +609,8 @@ class _DetailPageState extends State<DetailPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const BuatPenawaranPage(),
+                        builder: (context) =>
+                            BuatPenawaranPage(uid: widget.uid),
                       ),
                     );
                   },
@@ -553,7 +628,7 @@ class _DetailPageState extends State<DetailPage> {
                 visible: angkacek == 1 ? true : false,
                 child: ElevatedButton(
                   style: TextButton.styleFrom(
-                    padding: EdgeInsets.all(17),
+                    padding: const EdgeInsets.all(17),
                     backgroundColor: buttonColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -581,7 +656,7 @@ class _DetailPageState extends State<DetailPage> {
                 visible: angkacek == 2 ? true : false,
                 child: ElevatedButton(
                   style: TextButton.styleFrom(
-                    padding: EdgeInsets.all(17),
+                    padding: const EdgeInsets.all(17),
                     backgroundColor: buttonColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -611,16 +686,25 @@ class _DetailPageState extends State<DetailPage> {
 }
 
 class BuatPenawaranPage extends StatefulWidget {
-  const BuatPenawaranPage({super.key});
+  final String uid;
+  const BuatPenawaranPage({
+    super.key,
+    required this.uid,
+  });
 
   @override
   State<BuatPenawaranPage> createState() => _BuatPenawaranPageState();
 }
 
 class _BuatPenawaranPageState extends State<BuatPenawaranPage> {
-  DateTime _selectedDate1 = DateTime.now();
-  String _formattedDate1 = "";
-  String _date1 = "";
+  HomeService homeService = HomeService();
+
+  final controllerKodeSurat = TextEditingController();
+  final controllerNamaPerusahaan = TextEditingController();
+  final controllerAlamatPerusahaan = TextEditingController();
+
+  DateTime datePenawaran = DateTime.now();
+  final datePenawaranStr = TextEditingController();
 
   @override
   void initState() {
@@ -634,11 +718,83 @@ class _BuatPenawaranPageState extends State<BuatPenawaranPage> {
     super.dispose();
   }
 
-  TextFieldYa() {
+  Future inputHeaderPenawaran(context, idProyek, kodeSurat, tanggalDibuat,
+      namaPerusahaan, alamatPerusahaan) async {
+    var response = await homeService.inputHeaderPenawaran(
+        idProyek,
+        kodeSurat.text,
+        tanggalDibuat.text,
+        namaPerusahaan.text,
+        alamatPerusahaan.text);
+    if (response[0] == 200) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => BuatPenawaran2Page(uid: widget.uid),
+        ),
+      );
+    } else {
+      debugPrint("${response[0]}");
+    }
+  }
+
+  Future inputPenawaran(context, idProyek, judul, subPekerjaan, keterangan,
+      jumlah, satuan, harga, total) async {
+    var response = await homeService.inputPenawaran(idProyek, judul,
+        subPekerjaan, keterangan, jumlah, satuan, harga, total);
+    if (response[0] == 200) {
+      Navigator.pop(context);
+    } else {
+      debugPrint("${response[0]}");
+    }
+  }
+
+  textFieldDate(controller, onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AbsorbPointer(
+        child: TextField(
+          controller: controller,
+          showCursor: true,
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w500,
+            fontSize: 13,
+          ),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: lightText,
+            suffixIcon: const Icon(Icons.calendar_month),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(5),
+              borderSide: const BorderSide(
+                width: 1.5,
+                color: darkText,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(5),
+              borderSide: const BorderSide(
+                color: darkText,
+              ),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(5),
+              borderSide: const BorderSide(
+                color: darkText,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  TextFieldYa(controller) {
     return TextField(
       readOnly: false,
-      // controller:
-      //     _controllerJumlahBarangTambahPenjualan,
+      controller: controller,
       showCursor: true,
       style: GoogleFonts.inter(
         fontWeight: FontWeight.w500,
@@ -676,11 +832,10 @@ class _BuatPenawaranPageState extends State<BuatPenawaranPage> {
     );
   }
 
-  TextFieldYa2() {
+  TextFieldYa2(controller) {
     return TextField(
       readOnly: false,
-      // controller:
-      //     _controllerJumlahBarangTambahPenjualan,
+      controller: controller,
       keyboardType: TextInputType.number,
       showCursor: true,
       style: GoogleFonts.inter(
@@ -719,34 +874,34 @@ class _BuatPenawaranPageState extends State<BuatPenawaranPage> {
     );
   }
 
-  Future<void> selectFilterDate1(context) async {
+  Future<void> selectDatetime(context, selectedDate, stringDate) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: _selectedDate1,
+      initialDate: selectedDate,
       firstDate: DateTime(DateTime.now().year - 10, 1, 1),
       lastDate: DateTime(DateTime.now().year + 10, 12, 31),
       builder: (context, child) {
         return Theme(
             data: Theme.of(context).copyWith(
-              colorScheme: ColorScheme.light(
+              colorScheme: const ColorScheme.light(
                 primary: Color(0xff13293D),
                 onPrimary: lightText,
                 onSurface: darkText,
               ),
               textButtonTheme: TextButtonThemeData(
                 style: TextButton.styleFrom(
-                  foregroundColor: Color(0xff13293D), // button text color
+                  foregroundColor: const Color(0xff13293D), // button text color
                 ),
               ),
             ),
             child: child!);
       },
     );
-    if (picked != null && picked != _selectedDate1) {
+    if (picked != null && picked != selectedDate) {
       if (mounted) {
-        _selectedDate1 = picked;
-        _formattedDate1 = DateFormat('dd-MM-yyyy').format(_selectedDate1);
-        _date1 = _formattedDate1;
+        selectedDate = picked;
+        String temp = DateFormat('dd-MM-yyyy').format(selectedDate);
+        stringDate.text = temp;
 
         setState(() {});
       }
@@ -794,7 +949,7 @@ class _BuatPenawaranPageState extends State<BuatPenawaranPage> {
                           fontSize: 16,
                         ),
                       ),
-                      SizedBox(height: 5),
+                      const SizedBox(height: 5),
                       Text(
                         "Felmel@gmail.com",
                         style: GoogleFonts.notoSans(
@@ -856,65 +1011,36 @@ class _BuatPenawaranPageState extends State<BuatPenawaranPage> {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            SizedBox(height: 5),
-                            TextFieldYa2(),
+                            const SizedBox(height: 5),
+                            TextFieldYa2(controllerKodeSurat),
                           ],
                         ),
                       ),
-                      SizedBox(width: 15),
+                      const SizedBox(width: 15),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Masukkan Tanggal Penawaran",
+                              "Tanggal Penawaran",
                               style: GoogleFonts.notoSans(
                                 fontSize: 15,
                                 color: darkText,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            SizedBox(height: 5),
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: darkText,
-                                    width: 1,
-                                    style: BorderStyle.solid),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.all(9),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      _date1,
-                                      style: GoogleFonts.notoSans(
-                                        color: darkText,
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                        onTap: () {
-                                          selectFilterDate1(context)
-                                              .whenComplete(
-                                                  () => setState(() {}));
-                                        },
-                                        child:
-                                            const Icon(Icons.calendar_month)),
-                                  ],
-                                ),
-                              ),
-                            ),
+                            const SizedBox(height: 5),
+                            textFieldDate(datePenawaranStr, () {
+                              selectDatetime(
+                                      context, datePenawaran, datePenawaranStr)
+                                  .whenComplete(() => setState(() {}));
+                            })
                           ],
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Row(
                     children: [
                       Expanded(
@@ -929,12 +1055,12 @@ class _BuatPenawaranPageState extends State<BuatPenawaranPage> {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            SizedBox(height: 5),
-                            TextFieldYa(),
+                            const SizedBox(height: 5),
+                            TextFieldYa(controllerNamaPerusahaan),
                           ],
                         ),
                       ),
-                      SizedBox(width: 15),
+                      const SizedBox(width: 15),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -947,31 +1073,32 @@ class _BuatPenawaranPageState extends State<BuatPenawaranPage> {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            SizedBox(height: 5),
-                            TextFieldYa(),
+                            const SizedBox(height: 5),
+                            TextFieldYa(controllerAlamatPerusahaan),
                           ],
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 100),
+                  const SizedBox(height: 100),
                   Align(
                     alignment: Alignment.bottomRight,
                     child: ElevatedButton(
                       style: TextButton.styleFrom(
-                        padding: EdgeInsets.fromLTRB(30, 17, 30, 17),
+                        padding: const EdgeInsets.fromLTRB(30, 17, 30, 17),
                         backgroundColor: buttonColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const BuatPenawaran2Page(),
-                          ),
-                        );
+                        inputHeaderPenawaran(
+                            context,
+                            widget.uid,
+                            controllerKodeSurat,
+                            datePenawaranStr,
+                            controllerNamaPerusahaan,
+                            controllerAlamatPerusahaan);
                       },
                       child: Text(
                         "Submit",
@@ -992,27 +1119,112 @@ class _BuatPenawaranPageState extends State<BuatPenawaranPage> {
 }
 
 class BuatPenawaran2Page extends StatefulWidget {
-  const BuatPenawaran2Page({super.key});
+  final String uid;
+  const BuatPenawaran2Page({
+    super.key,
+    required this.uid,
+  });
 
   @override
   State<BuatPenawaran2Page> createState() => _BuatPenawaran2PageState();
 }
 
 class _BuatPenawaran2PageState extends State<BuatPenawaran2Page> {
-  DateTime _selectedDate = DateTime.now();
-  String _formattedDate = "";
-  String _date = "";
+  HomeService homeService = HomeService();
+  late Future headerPenawaran;
+  late Future childPenawaran;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    headerPenawaran = homeService.readHeaderPenawaran(widget.uid);
+    childPenawaran = homeService.readPenawaran(widget.uid);
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+  }
+
+  DateTime datePenawaran = DateTime.now();
+  final datePenawaranStr = TextEditingController();
+
+  Future<void> selectDatetime(context, selectedDate, stringDate) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(DateTime.now().year - 10, 1, 1),
+      lastDate: DateTime(DateTime.now().year + 10, 12, 31),
+      builder: (context, child) {
+        return Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: const ColorScheme.light(
+                primary: Color(0xff13293D),
+                onPrimary: lightText,
+                onSurface: darkText,
+              ),
+              textButtonTheme: TextButtonThemeData(
+                style: TextButton.styleFrom(
+                  foregroundColor: const Color(0xff13293D), // button text color
+                ),
+              ),
+            ),
+            child: child!);
+      },
+    );
+    if (picked != null && picked != selectedDate) {
+      if (mounted) {
+        selectedDate = picked;
+        String temp = DateFormat('dd-MM-yyyy').format(selectedDate);
+        stringDate.text = temp;
+
+        setState(() {});
+      }
+    }
+  }
+
+  textFieldDate(controller, onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AbsorbPointer(
+        child: TextField(
+          controller: controller,
+          showCursor: true,
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w500,
+            fontSize: 13,
+          ),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: lightText,
+            suffixIcon: const Icon(Icons.calendar_month),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(5),
+              borderSide: const BorderSide(
+                width: 1.5,
+                color: darkText,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(5),
+              borderSide: const BorderSide(
+                color: darkText,
+              ),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(5),
+              borderSide: const BorderSide(
+                color: darkText,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   _showEditPenawaran(dw, dh) {
@@ -1045,7 +1257,7 @@ class _BuatPenawaran2PageState extends State<BuatPenawaran2Page> {
                       children: [
                         Center(
                           child: Padding(
-                            padding: EdgeInsets.all(8),
+                            padding: const EdgeInsets.all(8),
                             child: Text(
                               "Edit Penawaran",
                               style: GoogleFonts.notoSans(
@@ -1081,12 +1293,12 @@ class _BuatPenawaran2PageState extends State<BuatPenawaran2Page> {
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
-                                        SizedBox(height: 5),
+                                        const SizedBox(height: 5),
                                         TextFieldYa(),
                                       ],
                                     ),
                                   ),
-                                  SizedBox(width: 15),
+                                  const SizedBox(width: 15),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
@@ -1100,14 +1312,14 @@ class _BuatPenawaran2PageState extends State<BuatPenawaran2Page> {
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
-                                        SizedBox(height: 5),
+                                        const SizedBox(height: 5),
                                         TextFieldYa(),
                                       ],
                                     ),
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               Row(
                                 children: [
                                   Expanded(
@@ -1123,12 +1335,12 @@ class _BuatPenawaran2PageState extends State<BuatPenawaran2Page> {
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
-                                        SizedBox(height: 5),
+                                        const SizedBox(height: 5),
                                         TextFieldYa(),
                                       ],
                                     ),
                                   ),
-                                  SizedBox(width: 15),
+                                  const SizedBox(width: 15),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
@@ -1142,7 +1354,7 @@ class _BuatPenawaran2PageState extends State<BuatPenawaran2Page> {
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
-                                        SizedBox(height: 5),
+                                        const SizedBox(height: 5),
                                         TextFieldYa(),
                                       ],
                                     ),
@@ -1227,40 +1439,6 @@ class _BuatPenawaran2PageState extends State<BuatPenawaran2Page> {
     });
   }
 
-  Future<void> selectFilterDate(context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime(DateTime.now().year - 10, 1, 1),
-      lastDate: DateTime(DateTime.now().year + 10, 12, 31),
-      builder: (context, child) {
-        return Theme(
-            data: Theme.of(context).copyWith(
-              colorScheme: ColorScheme.light(
-                primary: Color(0xff13293D),
-                onPrimary: lightText,
-                onSurface: darkText,
-              ),
-              textButtonTheme: TextButtonThemeData(
-                style: TextButton.styleFrom(
-                  foregroundColor: Color(0xff13293D), // button text color
-                ),
-              ),
-            ),
-            child: child!);
-      },
-    );
-    if (picked != null && picked != _selectedDate) {
-      if (mounted) {
-        _selectedDate = picked;
-        _formattedDate = DateFormat('dd-MM-yyyy').format(_selectedDate);
-        _date = _formattedDate;
-
-        setState(() {});
-      }
-    }
-  }
-
   _showEditHeader(dw, dh) {
     showDialog(
       barrierDismissible: false,
@@ -1291,7 +1469,7 @@ class _BuatPenawaran2PageState extends State<BuatPenawaran2Page> {
                       children: [
                         Center(
                           child: Padding(
-                            padding: EdgeInsets.all(8),
+                            padding: const EdgeInsets.all(8),
                             child: Text(
                               "Edit Header Penawaran",
                               style: GoogleFonts.notoSans(
@@ -1327,12 +1505,12 @@ class _BuatPenawaran2PageState extends State<BuatPenawaran2Page> {
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
-                                        SizedBox(height: 5),
+                                        const SizedBox(height: 5),
                                         TextFieldYa(),
                                       ],
                                     ),
                                   ),
-                                  SizedBox(width: 15),
+                                  const SizedBox(width: 15),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
@@ -1346,49 +1524,13 @@ class _BuatPenawaran2PageState extends State<BuatPenawaran2Page> {
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
-                                        SizedBox(height: 5),
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: darkText,
-                                                width: 1,
-                                                style: BorderStyle.solid),
-                                            borderRadius:
-                                                BorderRadius.circular(5),
-                                          ),
-                                          child: Padding(
-                                            padding: EdgeInsets.all(9),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Text(
-                                                  _date,
-                                                  style: GoogleFonts.notoSans(
-                                                    color: darkText,
-                                                    fontWeight: FontWeight.w500,
-                                                    fontSize: 13,
-                                                  ),
-                                                ),
-                                                GestureDetector(
-                                                    onTap: () {
-                                                      selectFilterDate(context)
-                                                          .whenComplete(() =>
-                                                              setState(() {}));
-                                                    },
-                                                    child: const Icon(
-                                                        Icons.calendar_month)),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
+                                        const SizedBox(height: 5),
                                       ],
                                     ),
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               Row(
                                 children: [
                                   Expanded(
@@ -1404,12 +1546,12 @@ class _BuatPenawaran2PageState extends State<BuatPenawaran2Page> {
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
-                                        SizedBox(height: 5),
+                                        const SizedBox(height: 5),
                                         TextFieldYa(),
                                       ],
                                     ),
                                   ),
-                                  SizedBox(width: 15),
+                                  const SizedBox(width: 15),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
@@ -1423,7 +1565,7 @@ class _BuatPenawaran2PageState extends State<BuatPenawaran2Page> {
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
-                                        SizedBox(height: 5),
+                                        const SizedBox(height: 5),
                                         TextFieldYa(),
                                       ],
                                     ),
@@ -1588,6 +1730,15 @@ class _BuatPenawaran2PageState extends State<BuatPenawaran2Page> {
     );
   }
 
+  Future updateStatusPenawaran(context, idProyek) async {
+    var response = await homeService.updateStatusPenawaran(idProyek);
+    if (response[0] == 200) {
+      Navigator.pop(context);
+    } else {
+      debugPrint("Gagal");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final deviceWidth = MediaQuery.of(context).size.width;
@@ -1629,7 +1780,7 @@ class _BuatPenawaran2PageState extends State<BuatPenawaran2Page> {
                           fontSize: 16,
                         ),
                       ),
-                      SizedBox(height: 5),
+                      const SizedBox(height: 5),
                       Text(
                         "Felmel@gmail.com",
                         style: GoogleFonts.notoSans(
@@ -1672,293 +1823,401 @@ class _BuatPenawaran2PageState extends State<BuatPenawaran2Page> {
         body: ScrollConfiguration(
           behavior: ScrollConfiguration.of(context).copyWith(
               dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse}),
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(35, 20, 35, 20),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Kode Surat",
-                            style: GoogleFonts.notoSans(
-                              color: darkText,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            "Tanggal Penawaran",
-                            style: GoogleFonts.notoSans(
-                              color: darkText,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            "Nama Perusahaan",
-                            style: GoogleFonts.notoSans(
-                              color: darkText,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            "Alamat Perusahaan",
-                            style: GoogleFonts.notoSans(
-                              color: darkText,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(width: 55),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            ": 1453",
-                            style: GoogleFonts.notoSans(
-                              color: darkText,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            ": 18/05/2023",
-                            style: GoogleFonts.notoSans(
-                              color: darkText,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            ": PT.Indah Mulia",
-                            style: GoogleFonts.notoSans(
-                              color: darkText,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            ": Semarang Tengah No.21",
-                            style: GoogleFonts.notoSans(
-                              color: darkText,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(width: 55),
-                      GestureDetector(
-                          onTap: () {
-                            _showEditHeader(deviceWidth, deviceHeight);
-                          },
-                          child: Icon(Icons.edit))
-                    ],
-                  ),
-                  SizedBox(height: 40),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Nyemen",
-                        style: GoogleFonts.notoSans(
-                          color: darkText,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 15,
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: SingleChildScrollView(
-                              physics: const ClampingScrollPhysics(),
-                              controller: ScrollController(),
-                              scrollDirection: Axis.horizontal,
-                              child: ConstrainedBox(
-                                constraints:
-                                    BoxConstraints(minWidth: deviceWidth),
-                                child: DataTable(
-                                    border: TableBorder.all(
-                                      color: Colors.black.withOpacity(0.5),
-                                      style: BorderStyle.solid,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(35, 20, 35, 20),
+            child: Column(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: FutureBuilder(
+                    future: headerPenawaran,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        List snapData = snapshot.data! as List;
+                        if (snapData[0] != 404) {
+                          return Row(
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Kode Surat",
+                                    style: GoogleFonts.notoSans(
+                                      color: darkText,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 14,
                                     ),
-                                    headingRowHeight: 50,
-                                    dataRowHeight: 50,
-                                    columns: [
-                                      datCol("Nama Sub Pekerjaan"),
-                                      datCol("Jumlah"),
-                                      datCol("Harga"),
-                                      datCol("Satuan"),
-                                      datCol("Total"),
-                                    ],
-                                    rows: List.generate(3, (index) {
-                                      return DataRow(cells: [
-                                        datRow1("fwfawgawgagaha"),
-                                        datRow1("100"),
-                                        datRow1("10000"),
-                                        datRow1("kg"),
-                                        datRow1("100000"),
-                                      ]);
-                                    })),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    "Tanggal Penawaran",
+                                    style: GoogleFonts.notoSans(
+                                      color: darkText,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    "Nama Perusahaan",
+                                    style: GoogleFonts.notoSans(
+                                      color: darkText,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    "Alamat Perusahaan",
+                                    style: GoogleFonts.notoSans(
+                                      color: darkText,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ),
-                          DataTable(
-                            border: TableBorder(
-                                top: BorderSide(
-                                    color: Colors.black.withOpacity(0.5)),
-                                bottom: BorderSide(
-                                    color: Colors.black.withOpacity(0.5)),
-                                right: BorderSide(
-                                    color: Colors.black.withOpacity(0.5)),
-                                horizontalInside: BorderSide(
-                                    color: Colors.black.withOpacity(0.5),
-                                    style: BorderStyle.solid)),
-                            headingRowHeight: 50,
-                            dataRowHeight: 50,
-                            columns: [
-                              datCol(""),
+                              const SizedBox(width: 55),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    ": ${snapData[2][0]['kode_surat']}",
+                                    style: GoogleFonts.notoSans(
+                                      color: darkText,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    ": ${snapData[2][0]['tanggal_dibuat']}",
+                                    style: GoogleFonts.notoSans(
+                                      color: darkText,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    ": ${snapData[2][0]['nama_perusahaan']}",
+                                    style: GoogleFonts.notoSans(
+                                      color: darkText,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    ": ${snapData[2][0]['alamat_perusahaan']}",
+                                    style: GoogleFonts.notoSans(
+                                      color: darkText,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(width: 55),
+                              GestureDetector(
+                                onTap: () {
+                                  _showEditHeader(deviceWidth, deviceHeight);
+                                },
+                                child: const Icon(Icons.edit),
+                              )
                             ],
-                            rows: List.generate(
-                              3,
-                              (index) {
-                                return DataRow(
-                                  cells: [
-                                    DataCell(
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          GestureDetector(
-                                            onTap: () {
-                                              _showEditPenawaran(
-                                                  deviceWidth, deviceHeight);
-                                            },
-                                            child: Container(
-                                              width: 40,
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    color: darkText,
-                                                    width: 0.4,
-                                                    style: BorderStyle.solid),
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
+                          );
+                        } else {
+                          return const Center(
+                            child: Text("No Header Found"),
+                          );
+                        }
+                      }
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 40),
+                Expanded(
+                  flex: 3,
+                  child: FutureBuilder(
+                    future: childPenawaran,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        List snapData = snapshot.data! as List;
+                        if (snapData[0] != 404) {
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            controller: ScrollController(),
+                            physics: const ClampingScrollPhysics(),
+                            itemCount: snapData[2].length,
+                            itemBuilder: (context, index) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    snapData[2][index]['judul'],
+                                    style: GoogleFonts.notoSans(
+                                      color: darkText,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: SingleChildScrollView(
+                                          physics:
+                                              const ClampingScrollPhysics(),
+                                          controller: ScrollController(),
+                                          scrollDirection: Axis.horizontal,
+                                          child: ConstrainedBox(
+                                            constraints: BoxConstraints(
+                                                minWidth: deviceWidth),
+                                            child: DataTable(
+                                              border: TableBorder.all(
+                                                color: Colors.black
+                                                    .withOpacity(0.5),
+                                                style: BorderStyle.solid,
                                               ),
-                                              height: 40,
-                                              child: const Center(
-                                                child: Icon(
-                                                  Icons.edit,
-                                                  size: 20,
-                                                ),
+                                              headingRowHeight: 50,
+                                              dataRowHeight: 50,
+                                              columns: [
+                                                datCol("Nama Sub Pekerjaan"),
+                                                datCol("Jumlah"),
+                                                datCol("Harga"),
+                                                datCol("Satuan"),
+                                                datCol("Sub Total"),
+                                                datCol("Keterangan"),
+                                              ],
+                                              rows: List.generate(
+                                                snapData[2][index]
+                                                        ['id_sub_pekerjaan']
+                                                    .length,
+                                                (indexItem) {
+                                                  return DataRow(
+                                                    cells: [
+                                                      datRow1(
+                                                          "${snapData[2][index]['sub_pekerjaan'][indexItem]}"),
+                                                      datRow1(
+                                                          "${snapData[2][index]['jumlah'][indexItem]}"),
+                                                      datRow1(
+                                                          "${snapData[2][index]['harga'][indexItem]}"),
+                                                      datRow1(
+                                                          "${snapData[2][index]['satuan'][indexItem]}"),
+                                                      datRow1(
+                                                          "${snapData[2][index]['total'][indexItem]}"),
+                                                      datRow1(
+                                                          "${snapData[2][index]['keterangan'][indexItem]}"),
+                                                    ],
+                                                  );
+                                                },
                                               ),
                                             ),
                                           ),
-                                        ],
+                                        ),
                                       ),
-                                    ),
-                                    //datRow3(2, context)
-                                  ],
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 80),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ElevatedButton(
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.fromLTRB(30, 17, 30, 17),
-                              backgroundColor: buttonColor,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            onPressed: () {},
-                            child: Text(
-                              "Generate PDF",
-                              style: GoogleFonts.notoSans(
-                                color: lightText,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 18,
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 15),
-                          ElevatedButton(
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.fromLTRB(30, 17, 30, 17),
-                              backgroundColor: buttonColor,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const BuatPenawaran3Page(),
-                                ),
+                                      DataTable(
+                                        border: TableBorder(
+                                            top: BorderSide(
+                                                color: Colors.black
+                                                    .withOpacity(0.5)),
+                                            bottom: BorderSide(
+                                                color: Colors.black
+                                                    .withOpacity(0.5)),
+                                            right: BorderSide(
+                                                color: Colors.black
+                                                    .withOpacity(0.5)),
+                                            horizontalInside: BorderSide(
+                                                color: Colors.black
+                                                    .withOpacity(0.5),
+                                                style: BorderStyle.solid)),
+                                        headingRowHeight: 50,
+                                        dataRowHeight: 50,
+                                        columns: [
+                                          datCol(""),
+                                        ],
+                                        rows: List.generate(
+                                          snapData[2][index]['id_sub_pekerjaan']
+                                              .length,
+                                          (index) {
+                                            return DataRow(
+                                              cells: [
+                                                DataCell(
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      GestureDetector(
+                                                        onTap: () {
+                                                          _showEditPenawaran(
+                                                              deviceWidth,
+                                                              deviceHeight);
+                                                        },
+                                                        child: Container(
+                                                          width: 40,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            border: Border.all(
+                                                                color: darkText,
+                                                                width: 0.4,
+                                                                style:
+                                                                    BorderStyle
+                                                                        .solid),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        5),
+                                                          ),
+                                                          height: 40,
+                                                          child: const Center(
+                                                            child: Icon(
+                                                              Icons.edit,
+                                                              size: 20,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                //datRow3(2, context)
+                                              ],
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        "Total: ",
+                                        style: GoogleFonts.notoSans(
+                                          color: darkText,
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                      Text(
+                                        "${snapData[2][index]['sub_total']}",
+                                        style: GoogleFonts.notoSans(
+                                          color: darkText,
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               );
                             },
-                            child: Text(
-                              "Tambah Pekerjaan",
-                              style: GoogleFonts.notoSans(
-                                color: lightText,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 18,
-                              ),
+                          );
+                        } else {
+                          return const Center(
+                            child: Text("No data found"),
+                          );
+                        }
+                      }
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 80),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.fromLTRB(30, 17, 30, 17),
+                            backgroundColor: buttonColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                        ],
-                      ),
-                      SizedBox(height: 20),
-                      ElevatedButton(
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.fromLTRB(30, 17, 30, 17),
-                          backgroundColor: buttonColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                          onPressed: () {},
+                          child: Text(
+                            "Generate PDF",
+                            style: GoogleFonts.notoSans(
+                              color: lightText,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 18,
+                            ),
                           ),
                         ),
-                        onPressed: () {},
-                        child: Text(
-                          "Disetujui",
-                          style: GoogleFonts.notoSans(
-                            color: lightText,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 18,
+                        const SizedBox(width: 15),
+                        ElevatedButton(
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.fromLTRB(30, 17, 30, 17),
+                            backgroundColor: buttonColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    BuatPenawaran3Page(uid: widget.uid),
+                              ),
+                            ).whenComplete(() {
+                              headerPenawaran =
+                                  homeService.readHeaderPenawaran(widget.uid);
+                              childPenawaran =
+                                  homeService.readPenawaran(widget.uid);
+                            });
+                          },
+                          child: Text(
+                            "Tambah Pekerjaan",
+                            style: GoogleFonts.notoSans(
+                              color: lightText,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 18,
+                            ),
                           ),
                         ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.fromLTRB(30, 17, 30, 17),
+                        backgroundColor: buttonColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
-                    ],
-                  )
-                ],
-              ),
+                      onPressed: () {
+                        updateStatusPenawaran(context, widget.uid);
+                      },
+                      child: Text(
+                        "Disetujui",
+                        style: GoogleFonts.notoSans(
+                          color: lightText,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              ],
             ),
           ),
         ));
@@ -1966,13 +2225,25 @@ class _BuatPenawaran2PageState extends State<BuatPenawaran2Page> {
 }
 
 class BuatPenawaran3Page extends StatefulWidget {
-  const BuatPenawaran3Page({super.key});
+  final String uid;
+  const BuatPenawaran3Page({
+    super.key,
+    required this.uid,
+  });
 
   @override
   State<BuatPenawaran3Page> createState() => _BuatPenawaran3PageState();
 }
 
 class _BuatPenawaran3PageState extends State<BuatPenawaran3Page> {
+  HomeService homeService = HomeService();
+  final controllerJudulPekerjaan = TextEditingController();
+
+  final controllerNamaSubJudul = TextEditingController();
+  final controllerJumlah = TextEditingController();
+  final controllerHarga = TextEditingController();
+  final controllerSatuan = TextEditingController();
+  List listPekerjaan = List.empty(growable: true);
   @override
   void initState() {
     // TODO: implement initState
@@ -1986,6 +2257,7 @@ class _BuatPenawaran3PageState extends State<BuatPenawaran3Page> {
   }
 
   _showTambahPenawaran(dw, dh) {
+    List tempList = [];
     showDialog(
       barrierDismissible: false,
       useRootNavigator: true,
@@ -2015,7 +2287,7 @@ class _BuatPenawaran3PageState extends State<BuatPenawaran3Page> {
                       children: [
                         Center(
                           child: Padding(
-                            padding: EdgeInsets.all(8),
+                            padding: const EdgeInsets.all(8),
                             child: Text(
                               "Tambah Penawaran",
                               style: GoogleFonts.notoSans(
@@ -2051,12 +2323,12 @@ class _BuatPenawaran3PageState extends State<BuatPenawaran3Page> {
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
-                                        SizedBox(height: 5),
-                                        TextFieldYa(),
+                                        const SizedBox(height: 5),
+                                        TextFieldYa(controllerNamaSubJudul),
                                       ],
                                     ),
                                   ),
-                                  SizedBox(width: 15),
+                                  const SizedBox(width: 15),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
@@ -2070,14 +2342,14 @@ class _BuatPenawaran3PageState extends State<BuatPenawaran3Page> {
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
-                                        SizedBox(height: 5),
-                                        TextFieldYa(),
+                                        const SizedBox(height: 5),
+                                        TextFieldYa(controllerJumlah),
                                       ],
                                     ),
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               Row(
                                 children: [
                                   Expanded(
@@ -2093,12 +2365,12 @@ class _BuatPenawaran3PageState extends State<BuatPenawaran3Page> {
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
-                                        SizedBox(height: 5),
-                                        TextFieldYa(),
+                                        const SizedBox(height: 5),
+                                        TextFieldYa(controllerHarga),
                                       ],
                                     ),
                                   ),
-                                  SizedBox(width: 15),
+                                  const SizedBox(width: 15),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
@@ -2112,8 +2384,8 @@ class _BuatPenawaran3PageState extends State<BuatPenawaran3Page> {
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
-                                        SizedBox(height: 5),
-                                        TextFieldYa(),
+                                        const SizedBox(height: 5),
+                                        TextFieldYa(controllerSatuan),
                                       ],
                                     ),
                                   ),
@@ -2137,6 +2409,21 @@ class _BuatPenawaran3PageState extends State<BuatPenawaran3Page> {
                                       ),
                                     ),
                                     onPressed: () {
+                                      var total = double.parse(
+                                              controllerJumlah.text) *
+                                          double.parse(controllerHarga.text);
+                                      tempList = [
+                                        controllerNamaSubJudul.text,
+                                        controllerJumlah.text,
+                                        controllerHarga.text,
+                                        controllerSatuan.text,
+                                        total.toString()
+                                      ];
+                                      listPekerjaan.add(tempList);
+                                      controllerNamaSubJudul.clear();
+                                      controllerJumlah.clear();
+                                      controllerHarga.clear();
+                                      controllerSatuan.clear();
                                       Navigator.pop(context);
                                     },
                                     child: Text(
@@ -2197,11 +2484,10 @@ class _BuatPenawaran3PageState extends State<BuatPenawaran3Page> {
     });
   }
 
-  TextFieldYa() {
+  TextFieldYa(controller) {
     return TextField(
       readOnly: false,
-      // controller:
-      //     _controllerJumlahBarangTambahPenjualan,
+      controller: controller,
       showCursor: true,
       style: GoogleFonts.inter(
         fontWeight: FontWeight.w500,
@@ -2277,320 +2563,360 @@ class _BuatPenawaran3PageState extends State<BuatPenawaran3Page> {
     );
   }
 
+  Future postPenawaran(context, uid, judul, listPekerjaan) async {
+    String subPekerjaan = "";
+    String jumlah = "";
+    String satuan = "";
+    String harga = "";
+    String total = "";
+    String keterangan = "";
+     for (var element in listPekerjaan) {
+      subPekerjaan += "|${element[0]}|";
+      jumlah += "|${element[1]}|";
+      harga += "|${element[2]}|";
+      satuan += "|${element[3]}|";
+      total += "|${element[4]}|";
+      keterangan += "|ket|";
+    }
+    debugPrint(
+        "Sub Pekerjaan: $subPekerjaan\nJumlah: $jumlah\nHarga: $harga\nSatuan: $satuan\nTotal: $total\nKeterangan: $keterangan\n");
+
+    var response = await homeService.inputPenawaran(uid, judul.text,
+        subPekerjaan, keterangan, jumlah, satuan, harga, total);
+    if (response[0] == 200) {
+      Navigator.pop(context);
+    } else {
+      debugPrint("Gagal");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final deviceWidth = MediaQuery.of(context).size.width;
     final deviceHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: lightText,
-          //diisi warna nek wes sesuai
-          automaticallyImplyLeading: false,
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Icon(
-                      Icons.arrow_back_ios,
-                      color: darkText,
-                      size: 50,
-                    ),
+      appBar: AppBar(
+        backgroundColor: lightText,
+        //diisi warna nek wes sesuai
+        automaticallyImplyLeading: false,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Icon(
+                    Icons.arrow_back_ios,
+                    color: darkText,
+                    size: 50,
                   ),
-                ],
-              ),
-              Row(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Kendrew Tandiono",
-                        style: GoogleFonts.notoSans(
-                          color: darkText,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 16,
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        "Felmel@gmail.com",
-                        style: GoogleFonts.notoSans(
-                          color: darkText,
-                          fontWeight: FontWeight.w400,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(right: 14),
-                  ),
-                  Container(
-                    width: 56,
-                    height: 56,
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(360),
-                      ),
-                    ),
-                    child: Image.asset("lib/assets/images/defaultprofile.png"),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(right: 10),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          //elevation: 0,
-          bottom: const PreferredSize(
-            preferredSize: Size.fromHeight(10),
-            child: Divider(
-              thickness: 3,
-              color: darkText,
+                ),
+              ],
             ),
+            Row(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Kendrew Tandiono",
+                      style: GoogleFonts.notoSans(
+                        color: darkText,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      "Felmel@gmail.com",
+                      style: GoogleFonts.notoSans(
+                        color: darkText,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(right: 14),
+                ),
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(360),
+                    ),
+                  ),
+                  child: Image.asset("lib/assets/images/defaultprofile.png"),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(right: 10),
+                ),
+              ],
+            ),
+          ],
+        ),
+        //elevation: 0,
+        bottom: const PreferredSize(
+          preferredSize: Size.fromHeight(10),
+          child: Divider(
+            thickness: 3,
+            color: darkText,
           ),
         ),
-        body: ScrollConfiguration(
-          behavior: ScrollConfiguration.of(context).copyWith(
-              dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse}),
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(35, 20, 35, 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Masukkan Judul Pekerjaan",
-                    style: GoogleFonts.notoSans(
-                      color: darkText,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 15,
-                    ),
+      ),
+      body: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(
+            dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse}),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(35, 20, 35, 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Masukkan Judul Pekerjaan",
+                  style: GoogleFonts.notoSans(
+                    color: darkText,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
                   ),
-                  SizedBox(height: 10),
-                  SizedBox(
-                    width: deviceWidth / 2,
-                    child: TextField(
-                      readOnly: false,
-                      // controller:
-                      //     _controllerJumlahBarangTambahPenjualan,
-                      showCursor: true,
-                      style: GoogleFonts.inter(
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: deviceWidth / 2,
+                  child: TextField(
+                    readOnly: false,
+                    controller: controllerJudulPekerjaan,
+                    showCursor: true,
+                    style: GoogleFonts.inter(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 13,
+                    ),
+                    onChanged: (value) {},
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: lightText,
+                      hintStyle: GoogleFonts.inter(
                         fontWeight: FontWeight.w500,
                         fontSize: 13,
                       ),
-                      onChanged: (value) {},
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: lightText,
-                        hintStyle: GoogleFonts.inter(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 13,
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 0, horizontal: 10),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5),
+                        borderSide: const BorderSide(
+                          width: 1.5,
+                          color: darkText,
                         ),
-                        contentPadding: const EdgeInsets.symmetric(
-                            vertical: 0, horizontal: 10),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5),
-                          borderSide: const BorderSide(
-                            width: 1.5,
-                            color: darkText,
-                          ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5),
+                        borderSide: const BorderSide(
+                          color: darkText,
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5),
-                          borderSide: const BorderSide(
-                            color: darkText,
-                          ),
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5),
-                          borderSide: const BorderSide(
-                            color: darkText,
-                          ),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5),
+                        borderSide: const BorderSide(
+                          color: darkText,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 40),
-                  Text(
-                    "Masukkan Sub Pekerjaan",
-                    style: GoogleFonts.notoSans(
-                      color: darkText,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 15,
-                    ),
+                ),
+                const SizedBox(height: 40),
+                Text(
+                  "Masukkan Sub Pekerjaan",
+                  style: GoogleFonts.notoSans(
+                    color: darkText,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
                   ),
-                  SizedBox(height: 10),
-                  Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                          color: buttonColor,
-                        ),
-                        borderRadius: BorderRadius.all(Radius.circular(8))),
-                    child: Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: SingleChildScrollView(
-                                  physics: const ClampingScrollPhysics(),
-                                  controller: ScrollController(),
-                                  scrollDirection: Axis.horizontal,
-                                  child: ConstrainedBox(
-                                    constraints:
-                                        BoxConstraints(minWidth: deviceWidth),
-                                    child: DataTable(
-                                        border: TableBorder.all(
-                                          color: Colors.black.withOpacity(0.5),
-                                          style: BorderStyle.solid,
-                                        ),
-                                        headingRowHeight: 50,
-                                        dataRowHeight: 50,
-                                        columns: [
-                                          datCol("Nama Sub Pekerjaan"),
-                                          datCol("Jumlah"),
-                                          datCol("Harga"),
-                                          datCol("Satuan"),
-                                          datCol("Total"),
-                                        ],
-                                        rows: List.generate(3, (index) {
-                                          return DataRow(cells: [
-                                            datRow1("fwfawgawgagaha"),
-                                            datRow1("100"),
-                                            datRow1("10000"),
-                                            datRow1("kg"),
-                                            datRow1("100000"),
-                                          ]);
-                                        })),
+                ),
+                const SizedBox(height: 10),
+                Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                        color: buttonColor,
+                      ),
+                      borderRadius: const BorderRadius.all(Radius.circular(8))),
+                  child: Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: SingleChildScrollView(
+                                physics: const ClampingScrollPhysics(),
+                                controller: ScrollController(),
+                                scrollDirection: Axis.horizontal,
+                                child: ConstrainedBox(
+                                  constraints:
+                                      BoxConstraints(minWidth: deviceWidth),
+                                  child: DataTable(
+                                    border: TableBorder.all(
+                                      color: Colors.black.withOpacity(0.5),
+                                      style: BorderStyle.solid,
+                                    ),
+                                    headingRowHeight: 50,
+                                    dataRowHeight: 50,
+                                    columns: [
+                                      datCol("Nama Sub Pekerjaan"),
+                                      datCol("Jumlah"),
+                                      datCol("Harga"),
+                                      datCol("Satuan"),
+                                      datCol("Total"),
+                                    ],
+                                    rows: List.generate(
+                                      listPekerjaan.length,
+                                      (index) {
+                                        return DataRow(
+                                          cells: [
+                                            datRow1(
+                                                "${listPekerjaan[index][0]}"),
+                                            datRow1(
+                                                "${listPekerjaan[index][1]}"),
+                                            datRow1(
+                                                "${listPekerjaan[index][2]}"),
+                                            datRow1(
+                                                "${listPekerjaan[index][3]}"),
+                                            datRow1(
+                                                "${listPekerjaan[index][4]}"),
+                                          ],
+                                        );
+                                      },
+                                    ),
                                   ),
                                 ),
                               ),
-                              DataTable(
-                                border: TableBorder(
-                                    top: BorderSide(
-                                        color: Colors.black.withOpacity(0.5)),
-                                    bottom: BorderSide(
-                                        color: Colors.black.withOpacity(0.5)),
-                                    right: BorderSide(
-                                        color: Colors.black.withOpacity(0.5)),
-                                    horizontalInside: BorderSide(
-                                        color: Colors.black.withOpacity(0.5),
-                                        style: BorderStyle.solid)),
-                                headingRowHeight: 50,
-                                dataRowHeight: 50,
-                                columns: [
-                                  datCol(""),
-                                ],
-                                rows: List.generate(
-                                  3,
-                                  (index) {
-                                    return DataRow(
-                                      cells: [
-                                        DataCell(
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              GestureDetector(
-                                                onTap: () {},
-                                                child: Container(
-                                                  width: 40,
-                                                  decoration: BoxDecoration(
-                                                    border: Border.all(
-                                                        color: darkText,
-                                                        width: 0.4,
-                                                        style:
-                                                            BorderStyle.solid),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5),
-                                                  ),
-                                                  height: 40,
-                                                  child: const Center(
-                                                    child: Icon(
-                                                      Icons.delete,
-                                                      size: 20,
-                                                    ),
+                            ),
+                            DataTable(
+                              border: TableBorder(
+                                  top: BorderSide(
+                                      color: Colors.black.withOpacity(0.5)),
+                                  bottom: BorderSide(
+                                      color: Colors.black.withOpacity(0.5)),
+                                  right: BorderSide(
+                                      color: Colors.black.withOpacity(0.5)),
+                                  horizontalInside: BorderSide(
+                                      color: Colors.black.withOpacity(0.5),
+                                      style: BorderStyle.solid)),
+                              headingRowHeight: 50,
+                              dataRowHeight: 50,
+                              columns: [
+                                datCol(""),
+                              ],
+                              rows: List.generate(
+                                listPekerjaan.length,
+                                (index) {
+                                  return DataRow(
+                                    cells: [
+                                      DataCell(
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () {},
+                                              child: Container(
+                                                width: 40,
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                      color: darkText,
+                                                      width: 0.4,
+                                                      style: BorderStyle.solid),
+                                                  borderRadius:
+                                                      BorderRadius.circular(5),
+                                                ),
+                                                height: 40,
+                                                child: const Center(
+                                                  child: Icon(
+                                                    Icons.delete,
+                                                    size: 20,
                                                   ),
                                                 ),
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
-                                        //datRow3(2, context)
-                                      ],
-                                    );
-                                  },
-                                ),
+                                      ),
+                                      //datRow3(2, context)
+                                    ],
+                                  );
+                                },
                               ),
-                            ],
-                          ),
-                          SizedBox(height: 40),
-                          Align(
-                            alignment: Alignment.center,
-                            child: ElevatedButton(
-                              style: TextButton.styleFrom(
-                                padding: EdgeInsets.fromLTRB(30, 17, 30, 17),
-                                backgroundColor: buttonColor,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 40),
+                        Align(
+                          alignment: Alignment.center,
+                          child: ElevatedButton(
+                            style: TextButton.styleFrom(
+                              padding:
+                                  const EdgeInsets.fromLTRB(30, 17, 30, 17),
+                              backgroundColor: buttonColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                              onPressed: () {
-                                _showTambahPenawaran(deviceWidth, deviceHeight);
-                              },
-                              child: Text(
-                                "Tambah",
-                                style: GoogleFonts.notoSans(
-                                  color: lightText,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 18,
-                                ),
+                            ),
+                            onPressed: () {
+                              _showTambahPenawaran(deviceWidth, deviceHeight);
+                            },
+                            child: Text(
+                              "Tambah",
+                              style: GoogleFonts.notoSans(
+                                color: lightText,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 18,
                               ),
                             ),
                           ),
-                        ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 50),
+                Align(
+                  alignment: Alignment.center,
+                  child: ElevatedButton(
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.fromLTRB(30, 17, 30, 17),
+                      backgroundColor: buttonColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () {
+                      postPenawaran(context, widget.uid,
+                          controllerJudulPekerjaan, listPekerjaan);
+                    },
+                    child: Text(
+                      "Submit",
+                      style: GoogleFonts.notoSans(
+                        color: lightText,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
                       ),
                     ),
                   ),
-                  SizedBox(height: 50),
-                  Align(
-                    alignment: Alignment.center,
-                    child: ElevatedButton(
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.fromLTRB(30, 17, 30, 17),
-                        backgroundColor: buttonColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      onPressed: () {},
-                      child: Text(
-                        "Submit",
-                        style: GoogleFonts.notoSans(
-                          color: lightText,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 }
