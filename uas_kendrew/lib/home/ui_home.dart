@@ -204,145 +204,145 @@ class _HomePageState extends State<HomePage> {
       body: Padding(
         padding: const EdgeInsets.fromLTRB(25, 35, 25, 30),
         child: FutureBuilder(
-            future: allProject,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                List snapData = snapshot.data! as List;
-                if (snapData[0] != 404) {
-                  return GridView.builder(
-                    itemCount: snapData[2].length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            childAspectRatio: 6 / 3.5,
-                            crossAxisSpacing: 20,
-                            mainAxisSpacing: 20),
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DetailPage(
-                                uid: snapData[2][index]['id_proyek'],
-                              ),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                color: darkText,
-                              ),
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(8))),
-                          child: Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    width: double.infinity,
-                                    decoration: const BoxDecoration(
-                                        image: DecorationImage(
-                                            image: AssetImage(
-                                                "lib/assets/images/back.jpeg"),
-                                            fit: BoxFit.cover),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(8))),
-                                  ),
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        snapData[2][index]['nama_proyek'],
-                                        overflow: TextOverflow.ellipsis,
-                                        softWrap: true,
-                                        style: GoogleFonts.notoSans(
-                                          fontSize: 14,
-                                          color: darkText,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                    PopupMenuButton(
-                                        color: buttonColor,
-                                        itemBuilder: (context) {
-                                          return [
-                                            PopupMenuItem<int>(
-                                              onTap: () {
-                                                finishProject(
-                                                    context,
-                                                    snapData[2][index]
-                                                        ['id_proyek']);
-                                              },
-                                              value: 0,
-                                              child: Text(
-                                                "Done",
-                                                overflow: TextOverflow.ellipsis,
-                                                softWrap: true,
-                                                style: GoogleFonts.notoSans(
-                                                  fontSize: 13,
-                                                  color: lightText,
-                                                  fontWeight: FontWeight.w700,
-                                                ),
-                                              ),
-                                            ),
-                                            PopupMenuItem<int>(
-                                              onTap: () {},
-                                              value: 1,
-                                              child: Text(
-                                                "Edit",
-                                                overflow: TextOverflow.ellipsis,
-                                                softWrap: true,
-                                                style: GoogleFonts.notoSans(
-                                                  fontSize: 13,
-                                                  color: lightText,
-                                                  fontWeight: FontWeight.w700,
-                                                ),
-                                              ),
-                                            ),
-                                          ];
-                                        },
-                                        onSelected: (value) {}),
-                                  ],
-                                ),
-                                // Text(
-                                //   "Tommy Sulistyo",
-                                //   overflow: TextOverflow.ellipsis,
-                                //   softWrap: true,
-                                //   style: GoogleFonts.notoSans(
-                                //     fontSize: 12,
-                                //     color: darkText,
-                                //     fontWeight: FontWeight.w400,
-                                //   ),
-                                // ),
-                              ],
+          future: allProject,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              List snapData = snapshot.data! as List;
+              if (snapData[0] != 404) {
+                return GridView.builder(
+                  itemCount: snapData[2].length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      childAspectRatio: 6 / 3.5,
+                      crossAxisSpacing: 20,
+                      mainAxisSpacing: 20),
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DetailPage(
+                              uid: snapData[2][index]['id_proyek'],
                             ),
                           ),
+                        );
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                              color: darkText,
+                            ),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(8))),
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  width: double.infinity,
+                                  decoration: const BoxDecoration(
+                                      image: DecorationImage(
+                                          image: AssetImage(
+                                              "lib/assets/images/back.jpeg"),
+                                          fit: BoxFit.cover),
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(8))),
+                                ),
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      snapData[2][index]['nama_proyek'],
+                                      overflow: TextOverflow.ellipsis,
+                                      softWrap: true,
+                                      style: GoogleFonts.notoSans(
+                                        fontSize: 14,
+                                        color: darkText,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                  PopupMenuButton(
+                                      color: buttonColor,
+                                      itemBuilder: (context) {
+                                        return [
+                                          PopupMenuItem<int>(
+                                            onTap: () {
+                                              finishProject(
+                                                  context,
+                                                  snapData[2][index]
+                                                      ['id_proyek']);
+                                            },
+                                            value: 0,
+                                            child: Text(
+                                              "Done",
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: true,
+                                              style: GoogleFonts.notoSans(
+                                                fontSize: 13,
+                                                color: lightText,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          ),
+                                          PopupMenuItem<int>(
+                                            onTap: () {},
+                                            value: 1,
+                                            child: Text(
+                                              "Edit",
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: true,
+                                              style: GoogleFonts.notoSans(
+                                                fontSize: 13,
+                                                color: lightText,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          ),
+                                        ];
+                                      },
+                                      onSelected: (value) {}),
+                                ],
+                              ),
+                              // Text(
+                              //   "Tommy Sulistyo",
+                              //   overflow: TextOverflow.ellipsis,
+                              //   softWrap: true,
+                              //   style: GoogleFonts.notoSans(
+                              //     fontSize: 12,
+                              //     color: darkText,
+                              //     fontWeight: FontWeight.w400,
+                              //   ),
+                              // ),
+                            ],
+                          ),
                         ),
-                      );
-                    },
-                  );
-                } else {
-                  const Center(
-                    child: Text(
-                      "Currently no project",
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: true,
-                    ),
-                  );
-                }
+                      ),
+                    );
+                  },
+                );
+              } else {
+                const Center(
+                  child: Text(
+                    "Currently no project",
+                    overflow: TextOverflow.ellipsis,
+                    softWrap: true,
+                  ),
+                );
               }
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }),
+            }
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        ),
       ),
     );
   }

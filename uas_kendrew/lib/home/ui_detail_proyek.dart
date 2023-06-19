@@ -17,6 +17,10 @@ import '../themes/floatingactionwidget.dart';
 
 int angkacek = 1;
 
+int _jumlahLantai = 0;
+int _luasTanah = 0;
+String _penanggungJawab = "";
+
 class DetailPage extends StatefulWidget {
   final String uid;
   const DetailPage({
