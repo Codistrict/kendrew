@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uas_kendrew/home/service_home.dart';
 import 'package:uas_kendrew/home/ui_detail_proyek.dart';
 import 'package:uas_kendrew/login/ui_login.dart';
 import 'package:uas_kendrew/themes/colors.dart';
+
+import 'package:fdottedline_nullsafety/fdottedline__nullsafety.dart';
 
 import '../global_var.dart';
 import '../themes/floatingactionwidget.dart';
@@ -143,6 +146,27 @@ class _HomePageState extends State<HomePage> {
               backgroundColor: buttonColor,
               onTap: () async {},
               label: 'History',
+              labelStyle: GoogleFonts.inter(
+                fontSize: 16,
+                color: lightText,
+                fontWeight: FontWeight.w500,
+              ),
+              labelBackgroundColor: buttonColor),
+          SpeedDialChild(
+              child: const Icon(
+                Icons.add,
+                color: lightText,
+              ),
+              backgroundColor: buttonColor,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MasterVendorPage(),
+                  ),
+                );
+              },
+              label: 'Master Vendor',
               labelStyle: GoogleFonts.inter(
                 fontSize: 16,
                 color: lightText,
@@ -371,9 +395,16 @@ class _BuatProjekPageState extends State<BuatProjekPage> {
   HomeService homeService = HomeService();
 
   final ctrlNamaProyek = TextEditingController();
+  final ctrlNamaPerusahaan = TextEditingController();
+  final ctrlAlamatPerusahaan = TextEditingController();
+  final ctrlJenisGedung = TextEditingController();
   final ctrlJumlahLantai = TextEditingController();
   final ctrlLuasTanah = TextEditingController();
   final ctrlPenanggungJawab = TextEditingController();
+
+  DateTime _selectedDateTglMulaiPekerjaan = DateTime.now();
+  String _formattedDateTglMulaiPekerjaan = "";
+  String _dateEditTglMulaiPekerjaan = "";
 
   @override
   void initState() {
@@ -386,9 +417,47 @@ class _BuatProjekPageState extends State<BuatProjekPage> {
     // TODO: implement dispose
     super.dispose();
     ctrlNamaProyek.dispose();
+    ctrlNamaPerusahaan.dispose();
+    ctrlAlamatPerusahaan.dispose();
+    ctrlJenisGedung.dispose();
     ctrlJumlahLantai.dispose();
     ctrlLuasTanah.dispose();
     ctrlPenanggungJawab.dispose();
+  }
+
+  Future<void> selectFilterDateTglMulaiPekerjaan(context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDateTglMulaiPekerjaan,
+      firstDate: _selectedDateTglMulaiPekerjaan,
+      lastDate: DateTime(DateTime.now().year + 10, 12, 31),
+      builder: (context, child) {
+        return Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: ColorScheme.light(
+                primary: Color(0xff13293D),
+                onPrimary: lightText,
+                onSurface: darkText,
+              ),
+              textButtonTheme: TextButtonThemeData(
+                style: TextButton.styleFrom(
+                  foregroundColor: Color(0xff13293D), // button text color
+                ),
+              ),
+            ),
+            child: child!);
+      },
+    );
+    if (picked != null && picked != _selectedDateTglMulaiPekerjaan) {
+      if (mounted) {
+        _selectedDateTglMulaiPekerjaan = picked;
+        _formattedDateTglMulaiPekerjaan =
+            DateFormat('dd-MM-yyyy').format(_selectedDateTglMulaiPekerjaan);
+        _dateEditTglMulaiPekerjaan = _formattedDateTglMulaiPekerjaan;
+
+        setState(() {});
+      }
+    }
   }
 
   // ========== Func Create Project ========== //
@@ -628,7 +697,7 @@ class _BuatProjekPageState extends State<BuatProjekPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Masukkan Jumlah Lantai",
+                              "Masukkan Nama Perusahaan",
                               style: GoogleFonts.notoSans(
                                 fontSize: 15,
                                 color: darkText,
@@ -636,7 +705,47 @@ class _BuatProjekPageState extends State<BuatProjekPage> {
                               ),
                             ),
                             const SizedBox(height: 5),
-                            TextFieldYa2(ctrlJumlahLantai),
+                            TextFieldYa(ctrlNamaPerusahaan),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Masukkan Alamat Perusahaan",
+                              style: GoogleFonts.notoSans(
+                                fontSize: 15,
+                                color: darkText,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            TextFieldYa(ctrlAlamatPerusahaan),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 15),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Masukkan Jenis Gedung",
+                              style: GoogleFonts.notoSans(
+                                fontSize: 15,
+                                color: darkText,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            TextFieldYa(ctrlJenisGedung),
                           ],
                         ),
                       ),
@@ -668,6 +777,28 @@ class _BuatProjekPageState extends State<BuatProjekPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
+                              "Masukkan Jumlah Lantai",
+                              style: GoogleFonts.notoSans(
+                                fontSize: 15,
+                                color: darkText,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            TextFieldYa2(ctrlJumlahLantai),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
                               "Masukkan Penanggung Jawab",
                               style: GoogleFonts.notoSans(
                                 fontSize: 15,
@@ -677,6 +808,58 @@ class _BuatProjekPageState extends State<BuatProjekPage> {
                             ),
                             const SizedBox(height: 5),
                             TextFieldYa(ctrlPenanggungJawab),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 15),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Masukkan Tanggal Dimulai Pekerjaan",
+                              style: GoogleFonts.notoSans(
+                                fontSize: 15,
+                                color: darkText,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            SizedBox(height: 5),
+                            Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: darkText,
+                                    width: 1,
+                                    style: BorderStyle.solid),
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.all(9),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      _dateEditTglMulaiPekerjaan,
+                                      style: GoogleFonts.notoSans(
+                                        color: darkText,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                        onTap: () {
+                                          selectFilterDateTglMulaiPekerjaan(
+                                                  context)
+                                              .whenComplete(
+                                                  () => setState(() {}));
+                                        },
+                                        child:
+                                            const Icon(Icons.calendar_month)),
+                                  ],
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -728,5 +911,769 @@ class _BuatProjekPageState extends State<BuatProjekPage> {
             ),
           ),
         ));
+  }
+}
+
+class MasterVendorPage extends StatefulWidget {
+  const MasterVendorPage({Key? key}) : super(key: key);
+
+  @override
+  State<MasterVendorPage> createState() => _MasterVendorPageState();
+}
+
+class _MasterVendorPageState extends State<MasterVendorPage> {
+  HomeService homeService = HomeService();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final deviceWidth = MediaQuery.of(context).size.width;
+    final deviceHeight = MediaQuery.of(context).size.height;
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => BuatMasterVendorPage()));
+        },
+        backgroundColor: buttonColor,
+        child: const Icon(Icons.add),
+      ),
+      appBar: AppBar(
+        backgroundColor: lightText,
+        automaticallyImplyLeading: false,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Icon(
+                    Icons.arrow_back_ios,
+                    color: darkText,
+                    size: 50,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Kendrew Tandiono",
+                      style: GoogleFonts.notoSans(
+                        color: darkText,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      "Felmel@gmail.com",
+                      style: GoogleFonts.notoSans(
+                        color: darkText,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(right: 14),
+                ),
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(360),
+                    ),
+                  ),
+                  child: Image.asset("lib/assets/images/defaultprofile.png"),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(right: 10),
+                ),
+              ],
+            ),
+          ],
+        ),
+        bottom: const PreferredSize(
+          preferredSize: Size.fromHeight(10),
+          child: Divider(
+            thickness: 3,
+            color: darkText,
+          ),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.only(bottom: 30),
+        child: ScrollConfiguration(
+          behavior: ScrollConfiguration.of(context).copyWith(
+            dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse},
+          ),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  Material(
+                    borderRadius: BorderRadius.circular(10),
+                    elevation: 15,
+                    shadowColor: Colors.black87,
+                    color: buttonColor,
+                    child: ExpansionTile(
+                      maintainState: true,
+                      initiallyExpanded: false,
+                      expandedCrossAxisAlignment: CrossAxisAlignment.start,
+                      expandedAlignment: Alignment.centerLeft,
+                      iconColor: buttonColor,
+                      collapsedIconColor: buttonColor,
+                      title: Column(
+                        children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  "ID Vendor",
+                                  style: GoogleFonts.nunito(
+                                    fontSize: 15,
+                                    letterSpacing: 0.125,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 3,
+                                child: Text(
+                                  "Nama Vendor",
+                                  style: GoogleFonts.nunito(
+                                    fontSize: 15,
+                                    letterSpacing: 0.125,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 3,
+                                child: Text(
+                                  "Pekerjaan Vendor",
+                                  style: GoogleFonts.nunito(
+                                    fontSize: 15,
+                                    letterSpacing: 0.125,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 15),
+                  Container(
+                    child: SingleChildScrollView(
+                      physics: const ClampingScrollPhysics(),
+                      controller: ScrollController(),
+                      child: ScrollConfiguration(
+                        behavior: ScrollConfiguration.of(context).copyWith(
+                          dragDevices: {
+                            PointerDeviceKind.touch,
+                            PointerDeviceKind.mouse,
+                          },
+                        ),
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.vertical,
+                          controller: ScrollController(),
+                          physics: const ClampingScrollPhysics(),
+                          itemCount: 3,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.all(5),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: scaffoldBackgroundColor,
+                                    border: Border.all(
+                                      color: darkText,
+                                    ),
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(8))),
+                                child: ExpansionTile(
+                                  maintainState: true,
+                                  initiallyExpanded: true,
+                                  expandedCrossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  expandedAlignment: Alignment.centerLeft,
+                                  textColor: darkText,
+                                  iconColor: darkText,
+                                  collapsedTextColor: darkText,
+                                  collapsedIconColor: darkText,
+                                  title: Container(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(5, 0, 0, 0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: SizedBox(
+                                            child: Row(
+                                              children: [
+                                                Expanded(
+                                                  flex: 2,
+                                                  child: Text(
+                                                    "001",
+                                                    style: GoogleFonts.nunito(
+                                                      fontSize: 15,
+                                                      letterSpacing: 0.125,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: darkText,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  flex: 3,
+                                                  child: Text(
+                                                    "Saga",
+                                                    style: GoogleFonts.nunito(
+                                                      fontSize: 15,
+                                                      letterSpacing: 0.125,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: darkText,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  flex: 3,
+                                                  child: Text(
+                                                    "Wallpaper",
+                                                    style: GoogleFonts.nunito(
+                                                      fontSize: 15,
+                                                      letterSpacing: 0.125,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: darkText,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  children: [
+                                    Column(
+                                      children: [
+                                        const Divider(
+                                          thickness: 1,
+                                          color: darkText,
+                                        ),
+                                        Container(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              15, 5, 15, 0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "Informasi Vendor",
+                                                style: GoogleFonts.nunito(
+                                                  fontSize: 25,
+                                                  letterSpacing: 0.125,
+                                                  fontWeight: FontWeight.w400,
+                                                  color: darkText,
+                                                ),
+                                              ),
+                                              SizedBox(height: 20),
+                                              Row(
+                                                children: [
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        "Proyek Selesai",
+                                                        style:
+                                                            GoogleFonts.nunito(
+                                                          fontSize: 15,
+                                                          letterSpacing: 0.125,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          color: darkText,
+                                                        ),
+                                                      ),
+                                                      SizedBox(height: 3),
+                                                      Text(
+                                                        "Proyek Dalam Pengerjaan",
+                                                        style:
+                                                            GoogleFonts.nunito(
+                                                          fontSize: 15,
+                                                          letterSpacing: 0.125,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          color: darkText,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  SizedBox(width: 15),
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        ": 1",
+                                                        style:
+                                                            GoogleFonts.nunito(
+                                                          fontSize: 15,
+                                                          letterSpacing: 0.125,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          color: darkText,
+                                                        ),
+                                                      ),
+                                                      SizedBox(height: 3),
+                                                      Text(
+                                                        ": 3",
+                                                        style:
+                                                            GoogleFonts.nunito(
+                                                          fontSize: 15,
+                                                          letterSpacing: 0.125,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          color: darkText,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  )
+                                                ],
+                                              ),
+                                              SizedBox(height: 15),
+                                              Container(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    15, 10, 20, 10),
+                                                child: Column(
+                                                  children: [
+                                                    Row(
+                                                      //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                      children: [
+                                                        Expanded(
+                                                          flex: 1,
+                                                          child: Center(
+                                                            child: Text(
+                                                              "Id Proyek",
+                                                              style: GoogleFonts.inter(
+                                                                  fontSize: 15,
+                                                                  color:
+                                                                      darkText,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Expanded(
+                                                          flex: 1,
+                                                          child: Center(
+                                                            child: Text(
+                                                              "Nama Proyek",
+                                                              style: GoogleFonts.inter(
+                                                                  fontSize: 15,
+                                                                  color:
+                                                                      darkText,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Expanded(
+                                                          flex: 1,
+                                                          child: Center(
+                                                            child: Text(
+                                                              "Progress",
+                                                              style: GoogleFonts.inter(
+                                                                  fontSize: 15,
+                                                                  color:
+                                                                      darkText,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 15,
+                                                    ),
+                                                    FDottedLine(
+                                                      color: darkText,
+                                                      width: deviceWidth,
+                                                      strokeWidth: 1,
+                                                      dottedLength: 8,
+                                                      space: 2,
+                                                    ),
+                                                    Container(
+                                                      padding:
+                                                          EdgeInsets.fromLTRB(
+                                                              15, 10, 20, 0),
+                                                      child: Column(
+                                                        children: [
+                                                          ScrollConfiguration(
+                                                              behavior:
+                                                                  ScrollConfiguration.of(
+                                                                          context)
+                                                                      .copyWith(
+                                                                dragDevices: {
+                                                                  PointerDeviceKind
+                                                                      .touch,
+                                                                  PointerDeviceKind
+                                                                      .mouse,
+                                                                },
+                                                              ),
+                                                              child: ListView
+                                                                  .builder(
+                                                                      shrinkWrap:
+                                                                          true,
+                                                                      scrollDirection:
+                                                                          Axis
+                                                                              .vertical,
+                                                                      controller:
+                                                                          ScrollController(),
+                                                                      physics:
+                                                                          const ClampingScrollPhysics(),
+                                                                      itemCount:
+                                                                          4,
+                                                                      itemBuilder:
+                                                                          (context,
+                                                                              index) {
+                                                                        return Column(
+                                                                          children: [
+                                                                            Row(
+                                                                              children: [
+                                                                                Expanded(
+                                                                                  flex: 1,
+                                                                                  child: Center(
+                                                                                    child: Text(
+                                                                                      "V-001",
+                                                                                      style: GoogleFonts.inter(fontSize: 12, color: darkText, fontWeight: FontWeight.w400),
+                                                                                    ),
+                                                                                  ),
+                                                                                ),
+                                                                                Expanded(
+                                                                                  flex: 1,
+                                                                                  child: Center(
+                                                                                    child: Text(
+                                                                                      "Rumah Graha Family",
+                                                                                      style: GoogleFonts.inter(fontSize: 12, color: darkText, fontWeight: FontWeight.w400),
+                                                                                    ),
+                                                                                  ),
+                                                                                ),
+                                                                                Expanded(
+                                                                                  flex: 1,
+                                                                                  child: Center(
+                                                                                    child: Text(
+                                                                                      "50%",
+                                                                                      style: GoogleFonts.inter(fontSize: 12, color: darkText, fontWeight: FontWeight.w400),
+                                                                                    ),
+                                                                                  ),
+                                                                                ),
+                                                                              ],
+                                                                            ),
+                                                                            const SizedBox(
+                                                                              height: 10,
+                                                                            ),
+                                                                          ],
+                                                                        );
+                                                                      }))
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    FDottedLine(
+                                                      color: darkText,
+                                                      width: deviceWidth,
+                                                      strokeWidth: 1,
+                                                      dottedLength: 8,
+                                                      space: 2,
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 10,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class BuatMasterVendorPage extends StatefulWidget {
+  const BuatMasterVendorPage({Key? key}) : super(key: key);
+
+  @override
+  State<BuatMasterVendorPage> createState() => _BuatMasterVendorPageState();
+}
+
+class _BuatMasterVendorPageState extends State<BuatMasterVendorPage> {
+  final controllerNamaVen = TextEditingController();
+  final controllerPekerjaanVen = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  TextFieldYa(controller) {
+    return TextField(
+      readOnly: false,
+      controller: controller,
+      showCursor: true,
+      style: GoogleFonts.inter(
+        fontWeight: FontWeight.w500,
+        fontSize: 13,
+      ),
+      onChanged: (value) {},
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: lightText,
+        hintStyle: GoogleFonts.inter(
+          fontWeight: FontWeight.w500,
+          fontSize: 13,
+        ),
+        contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(5),
+          borderSide: const BorderSide(
+            width: 1.5,
+            color: darkText,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(5),
+          borderSide: const BorderSide(
+            color: darkText,
+          ),
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(5),
+          borderSide: const BorderSide(
+            color: darkText,
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final deviceWidth = MediaQuery.of(context).size.width;
+    final deviceHeight = MediaQuery.of(context).size.height;
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: lightText,
+        //diisi warna nek wes sesuai
+        automaticallyImplyLeading: false,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Icon(
+                    Icons.arrow_back_ios,
+                    color: darkText,
+                    size: 50,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Kendrew Tandiono",
+                      style: GoogleFonts.notoSans(
+                        color: darkText,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      "Felmel@gmail.com",
+                      style: GoogleFonts.notoSans(
+                        color: darkText,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(right: 14),
+                ),
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(360),
+                    ),
+                  ),
+                  child: Image.asset("lib/assets/images/defaultprofile.png"),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(right: 10),
+                ),
+              ],
+            ),
+          ],
+        ),
+        //elevation: 0,
+        bottom: const PreferredSize(
+          preferredSize: Size.fromHeight(10),
+          child: Divider(
+            thickness: 3,
+            color: darkText,
+          ),
+        ),
+      ),
+      body: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(
+            dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse}),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Nama Vendor",
+                            style: GoogleFonts.notoSans(
+                              fontSize: 15,
+                              color: darkText,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          TextFieldYa(controllerNamaVen),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Pekerjaan Vendor",
+                            style: GoogleFonts.notoSans(
+                              fontSize: 15,
+                              color: darkText,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          TextFieldYa(controllerPekerjaanVen),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 100),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: ElevatedButton(
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.fromLTRB(30, 17, 30, 17),
+                      backgroundColor: buttonColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () {},
+                    child: Text(
+                      "Submit",
+                      style: GoogleFonts.notoSans(
+                        color: lightText,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
