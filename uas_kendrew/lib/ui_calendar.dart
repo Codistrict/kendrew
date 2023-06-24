@@ -27,28 +27,102 @@ class _CalendarSfState extends State<CalendarSf> {
   loadData() async {
     itemList.add(
       Appointment(
-        startTime: DateTime.now().subtract(const Duration(days: 2)),
-        endTime: DateTime.now().add(const Duration(days: 4)),
-        subject: 'Field Trip',
+        startTime: DateTime.parse('2023-06-25'),
+        endTime: DateTime.parse('2023-07-08'),
+        subject: 'Pondasi Plat setempat',
         color: Colors.green,
       ),
     );
 
     itemList.add(
       Appointment(
-        startTime: DateTime.now().subtract(const Duration(days: 4)),
-        endTime: DateTime.now().add(const Duration(days: 2)),
-        subject: 'Meeting',
+        startTime: DateTime.parse('2023-07-09'),
+        endTime: DateTime.parse('2023-07-22'),
+        subject: 'Urug tanah Keseluruhan (t=70 cm)',
+        color: Colors.red,
+      ),
+    );
+
+    itemList.add(
+      Appointment(
+        startTime: DateTime.parse('2023-07-23'),
+        endTime: DateTime.parse('2023-07-29'),
+        subject: 'Cor Kolom struktur (20/30)',
+        color: Colors.blue,
+      ),
+    );
+
+    itemList.add(
+      Appointment(
+        startTime: DateTime.parse('2023-07-30'),
+        endTime: DateTime.parse('2023-08-05'),
+        subject: 'Cor Blok strruktur (30/30)',
         color: Colors.amber,
       ),
     );
 
     itemList.add(
       Appointment(
-        startTime: DateTime.now().subtract(const Duration(days: 1)),
-        endTime: DateTime.now().add(const Duration(days: 5)),
-        subject: 'Project',
-        color: Colors.blue,
+        startTime: DateTime.parse('2023-08-06'),
+        endTime: DateTime.parse('2023-08-12'),
+        subject: 'Cor sloof (20/20)',
+        color: Colors.green,
+      ),
+    );
+
+    itemList.add(
+      Appointment(
+        startTime: DateTime.parse('2023-08-13'),
+        endTime: DateTime.parse('2023-08-19'),
+        subject: 'Cor Kolom praktis (15/15)',
+        color: Colors.purple,
+      ),
+    );
+
+    itemList.add(
+      Appointment(
+        startTime: DateTime.parse('2023-08-20'),
+        endTime: DateTime.parse('2023-08-26'),
+        subject: 'Cor Rabatan lantai (t=7 cm)',
+        color: Colors.lightGreen,
+      ),
+    );
+
+    itemList.add(
+      Appointment(
+        startTime: DateTime.parse('2023-08-27'),
+        endTime: DateTime.parse('2023-09-02'),
+        subject: 'Cor Balok Tangga + Trap Tangga',
+        color: Colors.lightBlue,
+      ),
+    );
+
+    itemList.add(
+      Appointment(
+        startTime: DateTime.parse('2023-09-03'),
+        endTime: DateTime.parse('2023-09-16'),
+        subject: 'Pasang bata putih untuk dinding dan bawah sloof',
+        color: Colors.pink,
+      ),
+    );
+
+    itemList.add(
+      Appointment(
+        startTime: DateTime.parse('2023-09-17'),
+        endTime: DateTime.parse('2023-09-23'),
+        subject:
+            'Plester dinding, kolom, balok, plat lantai 2 ( tanpa plafon), tangga',
+        color: Colors.lime,
+      ),
+    );
+
+    itemList.add(
+      Appointment(
+        startTime: DateTime.parse('2023-09-24'),
+        endTime: DateTime.parse('2023-09-30'),
+        subject:
+            'Acian dinding, kolom, balok, plat lantai 2 (tanpa plafon), tangga',
+        color: Colors.teal,
       ),
     );
   }
@@ -103,7 +177,7 @@ class _CalendarSfState extends State<CalendarSf> {
           showAgenda: true,
           agendaViewHeight: deviceSize.height * 0.2,
           navigationDirection: MonthNavigationDirection.horizontal,
-          appointmentDisplayCount: 4,
+          appointmentDisplayCount: 1,
           numberOfWeeksInView: 6,
         ),
         firstDayOfWeek: 7,

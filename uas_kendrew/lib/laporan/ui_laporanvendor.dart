@@ -292,6 +292,20 @@ class _LaporanVendorPageState extends State<LaporanVendorPage> {
     super.dispose();
   }
 
+   List lt1 = [
+    [
+      'tsk101',
+      'Pondasi Plat setempat',
+      '25%',
+    ],
+    [
+      'tsk102',
+      'Urug tanah Keseluruhan (t=70 cm)',
+      '20%',
+    ],
+
+  ];
+
   @override
   Widget build(BuildContext context) {
     final deviceWidth = MediaQuery.of(context).size.width;
@@ -486,7 +500,7 @@ class _LaporanVendorPageState extends State<LaporanVendorPage> {
                           scrollDirection: Axis.vertical,
                           controller: ScrollController(),
                           physics: const ClampingScrollPhysics(),
-                          itemCount: 3,
+                          itemCount: 1,
                           itemBuilder: (context, index) {
                             return Padding(
                               padding: const EdgeInsets.all(5),
@@ -821,7 +835,7 @@ class _LaporanVendorPageState extends State<LaporanVendorPage> {
                                                                       physics:
                                                                           const ClampingScrollPhysics(),
                                                                       itemCount:
-                                                                          4,
+                                                                          lt1.length,
                                                                       itemBuilder:
                                                                           (context,
                                                                               index) {
@@ -833,7 +847,7 @@ class _LaporanVendorPageState extends State<LaporanVendorPage> {
                                                                                   flex: 1,
                                                                                   child: Center(
                                                                                     child: Text(
-                                                                                      "V-001",
+                                                                                      lt1[index][0],
                                                                                       style: GoogleFonts.inter(fontSize: 12, color: darkText, fontWeight: FontWeight.w400),
                                                                                     ),
                                                                                   ),
@@ -842,7 +856,7 @@ class _LaporanVendorPageState extends State<LaporanVendorPage> {
                                                                                   flex: 1,
                                                                                   child: Center(
                                                                                     child: Text(
-                                                                                      "Rumah Graha Family",
+                                                                                      lt1[index][1],
                                                                                       style: GoogleFonts.inter(fontSize: 12, color: darkText, fontWeight: FontWeight.w400),
                                                                                     ),
                                                                                   ),
@@ -851,7 +865,7 @@ class _LaporanVendorPageState extends State<LaporanVendorPage> {
                                                                                   flex: 1,
                                                                                   child: Center(
                                                                                     child: Text(
-                                                                                      "50%",
+                                                                                      lt1[index][2],
                                                                                       style: GoogleFonts.inter(fontSize: 12, color: darkText, fontWeight: FontWeight.w400),
                                                                                     ),
                                                                                   ),

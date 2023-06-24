@@ -47,7 +47,7 @@ class _DetailPageState extends State<DetailPage> {
   void initState() {
     // TODO: implement initState
 
-    _getDetail(widget.uid).whenComplete(() => setState(() {}));
+    //_getDetail(widget.uid).whenComplete(() => setState(() {}));
     super.initState();
   }
 
@@ -288,8 +288,7 @@ class _DetailPageState extends State<DetailPage> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          LaporanPage(),
+                                      builder: (context) => LaporanPage(),
                                     ));
                               },
                               child: Container(
@@ -818,6 +817,97 @@ class _BuatPenawaran2PageState extends State<BuatPenawaran2Page> {
   final ctrlSatuan = TextEditingController();
   final ctrlCatatan = TextEditingController();
   final ctrlJudul = TextEditingController();
+
+  List lt1 = [
+    [
+      'sl101',
+      'Pondasi Plat setempat',
+      '22,4',
+      '3.000.000',
+      'm3',
+      '67.200.000',
+    ],
+    [
+      'sl102',
+      'Urug tanah Keseluruhan (t=70 cm)',
+      '340',
+      '200.000',
+      'm3',
+      '68.000.000',
+    ],
+    [
+      'sl103',
+      'Cor Kolom struktur (20/30)',
+      '11,3',
+      '3.000.000',
+      'm3',
+      '33.900.000',
+    ],
+    [
+      'sl104',
+      'Cor Blok strruktur (30/30)',
+      '26,4',
+      '3.000.000',
+      'm3',
+      '79.200.000',
+    ],
+    [
+      'sl105',
+      'Cor sloof (20/20)',
+      '14,88',
+      '3.000.000',
+      'm3',
+      '44.640.000',
+    ],
+    [
+      'sl106',
+      'Cor Kolom praktis (15/15)',
+      '1,55',
+      '2.500.000',
+      'm3',
+      '3.875.000',
+    ],
+    [
+      'sl107',
+      'Cor Rabatan lantai (t=7 cm)',
+      '30,6',
+      '1.750.000',
+      'm3',
+      '53.550.000',
+    ],
+    [
+      'sl108',
+      'Cor Balok Tangga + Trap Tangga',
+      '3,78',
+      '3.500.000',
+      'm3',
+      '13.230.000',
+    ],
+    [
+      'sl109',
+      'Pasang bata putih untuk dinding dan bawah sloof',
+      '780,3',
+      '250000',
+      'm2',
+      '195.075.000',
+    ],
+    [
+      'sl110',
+      'Plester dinding, kolom, balok, plat lantai 2 ( tanpa plafon), tangga',
+      '1972,35',
+      '60000',
+      'm2',
+      '118.341.000',
+    ],
+    [
+      'sl111',
+      'Acian dinding, kolom, balok, plat lantai 2 (tanpa plafon), tangga',
+      '1.972,35',
+      '40000',
+      'm2',
+      '78.894.000',
+    ],
+  ];
 
   @override
   void initState() {
@@ -1596,22 +1686,28 @@ class _BuatPenawaran2PageState extends State<BuatPenawaran2Page> {
                                                               datCol("Total"),
                                                             ],
                                                             rows: List.generate(
-                                                              3,
+                                                              lt1.length,
                                                               (indexItem) {
                                                                 return DataRow(
                                                                   cells: [
-                                                                    datRow1(
-                                                                        "SP-1"),
-                                                                    datRow1(
-                                                                        "Cor Kolom Struktur"),
-                                                                    datRow1(
-                                                                        "8,77"),
-                                                                    datRow1(
-                                                                        "2.500.000"),
-                                                                    datRow1(
-                                                                        "M3"),
-                                                                    datRow1(
-                                                                        "21.925.000"),
+                                                                    datRow1(lt1[
+                                                                            indexItem]
+                                                                        [0]),
+                                                                    datRow1(lt1[
+                                                                            indexItem]
+                                                                        [1]),
+                                                                    datRow1(lt1[
+                                                                            indexItem]
+                                                                        [2]),
+                                                                    datRow1(lt1[
+                                                                            indexItem]
+                                                                        [3]),
+                                                                    datRow1(lt1[
+                                                                            indexItem]
+                                                                        [4]),
+                                                                    datRow1(lt1[
+                                                                            indexItem]
+                                                                        [5]),
                                                                   ],
                                                                 );
                                                               },
@@ -1646,7 +1742,7 @@ class _BuatPenawaran2PageState extends State<BuatPenawaran2Page> {
                                                         datCol(""),
                                                       ],
                                                       rows: List.generate(
-                                                        3,
+                                                        lt1.length,
                                                         (index) {
                                                           return DataRow(
                                                             cells: [

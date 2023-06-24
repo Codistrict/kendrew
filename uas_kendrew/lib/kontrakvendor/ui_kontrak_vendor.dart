@@ -258,7 +258,7 @@ class _KontrakVendorPageState extends State<KontrakVendorPage> {
                           scrollDirection: Axis.vertical,
                           controller: ScrollController(),
                           physics: const ClampingScrollPhysics(),
-                          itemCount: 3,
+                          itemCount: 1,
                           itemBuilder: (context, index) {
                             return Padding(
                               padding: const EdgeInsets.all(5),
@@ -310,7 +310,7 @@ class _KontrakVendorPageState extends State<KontrakVendorPage> {
                                                   flex: 3,
                                                   child: Center(
                                                     child: Text(
-                                                      "Saga Wallpaper",
+                                                      "Saga",
                                                       style: GoogleFonts.nunito(
                                                         fontSize: 15,
                                                         letterSpacing: 0.125,
@@ -325,7 +325,7 @@ class _KontrakVendorPageState extends State<KontrakVendorPage> {
                                                   flex: 3,
                                                   child: Center(
                                                     child: Text(
-                                                      "500.000.000",
+                                                      "755.905.000",
                                                       style: GoogleFonts.nunito(
                                                         fontSize: 15,
                                                         letterSpacing: 0.125,
@@ -340,7 +340,7 @@ class _KontrakVendorPageState extends State<KontrakVendorPage> {
                                                   flex: 3,
                                                   child: Center(
                                                     child: Text(
-                                                      "50.000.000",
+                                                      "193.976.250",
                                                       style: GoogleFonts.nunito(
                                                         fontSize: 15,
                                                         letterSpacing: 0.125,
@@ -355,7 +355,7 @@ class _KontrakVendorPageState extends State<KontrakVendorPage> {
                                                   flex: 3,
                                                   child: Center(
                                                     child: Text(
-                                                      "250.000.000",
+                                                      "581.928.750",
                                                       style: GoogleFonts.nunito(
                                                         fontSize: 15,
                                                         letterSpacing: 0.125,
@@ -543,7 +543,31 @@ class _KontrakVendorPageState extends State<KontrakVendorPage> {
                                                             .start,
                                                     children: [
                                                       Text(
-                                                        ": 05-06-2023",
+                                                        ": 12-06-2023",
+                                                        style:
+                                                            GoogleFonts.nunito(
+                                                          fontSize: 15,
+                                                          letterSpacing: 0.125,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          color: darkText,
+                                                        ),
+                                                      ),
+                                                      SizedBox(height: 3),
+                                                      Text(
+                                                        ": 25-06-2023",
+                                                        style:
+                                                            GoogleFonts.nunito(
+                                                          fontSize: 15,
+                                                          letterSpacing: 0.125,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          color: darkText,
+                                                        ),
+                                                      ),
+                                                      SizedBox(height: 3),
+                                                      Text(
+                                                        ": 30-09-2023",
                                                         style:
                                                             GoogleFonts.nunito(
                                                           fontSize: 15,
@@ -567,31 +591,7 @@ class _KontrakVendorPageState extends State<KontrakVendorPage> {
                                                       ),
                                                       SizedBox(height: 3),
                                                       Text(
-                                                        ": 05-06-2023",
-                                                        style:
-                                                            GoogleFonts.nunito(
-                                                          fontSize: 15,
-                                                          letterSpacing: 0.125,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          color: darkText,
-                                                        ),
-                                                      ),
-                                                      SizedBox(height: 3),
-                                                      Text(
-                                                        ": 05-06-2023",
-                                                        style:
-                                                            GoogleFonts.nunito(
-                                                          fontSize: 15,
-                                                          letterSpacing: 0.125,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          color: darkText,
-                                                        ),
-                                                      ),
-                                                      SizedBox(height: 3),
-                                                      Text(
-                                                        ": 05-06-2023",
+                                                        ": 07-10-2023",
                                                         style:
                                                             GoogleFonts.nunito(
                                                           fontSize: 15,
@@ -1607,14 +1607,14 @@ class _BuatPembayaranPageState extends State<BuatPembayaranPage> {
                                     datCol("Tanggal Pembayaran"),
                                   ],
                                   rows: List.generate(
-                                    3,
+                                    1,
                                     (indexItem) {
                                       return DataRow(
                                         cells: [
-                                          datRow1("S001"),
-                                          datRow1("Samsong"),
-                                          datRow1("50.000.000"),
-                                          datRow1("20-04-2023"),
+                                          datRow1("001"),
+                                          datRow1("sagawp"),
+                                          datRow1("193.976.250"),
+                                          datRow1("2023-06-25"),
                                         ],
                                       );
                                     },
@@ -1640,7 +1640,7 @@ class _BuatPembayaranPageState extends State<BuatPembayaranPage> {
                               datCol(""),
                             ],
                             rows: List.generate(
-                              3,
+                              1,
                               (index) {
                                 return DataRow(
                                   cells: [

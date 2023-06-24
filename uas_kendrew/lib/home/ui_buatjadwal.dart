@@ -38,6 +38,65 @@ class _JadwalPagePageState extends State<JadwalPage> {
     super.dispose();
   }
 
+  List lt1 = [
+    [
+      'bj101',
+      'Pondasi Plat setempat',
+      '14',
+    ],
+    [
+      'bj102',
+      'Urug tanah Keseluruhan (t=70 cm)',
+      '14',
+    ],
+    [
+      'bj103',
+      'Cor Kolom struktur (20/30)',
+      '7',
+    ],
+    [
+      'bj104',
+      'Cor Blok strruktur (30/30)',
+      '7',
+    ],
+    [
+      'bj105',
+      'Cor sloof (20/20)',
+      '7',
+    ],
+    [
+      'bj106',
+      'Cor Kolom praktis (15/15)',
+      '7',
+      
+    ],
+    [
+      'bj107',
+      'Cor Rabatan lantai (t=7 cm)',
+      '7',
+    ],
+    [
+      'bj108',
+      'Cor Balok Tangga + Trap Tangga',
+      '7',
+    ],
+    [
+      'bj109',
+      'Pasang bata putih untuk dinding dan bawah sloof',
+      '14',
+    ],
+    [
+      'bj110',
+      'Plester dinding, kolom, balok, plat lantai 2 ( tanpa plafon), tangga',
+      '7',
+    ],
+    [
+      'bj111',
+      'Acian dinding, kolom, balok, plat lantai 2 (tanpa plafon), tangga',
+      '7',
+    ],
+  ];
+
   TextFieldYa() {
     return TextField(
       readOnly: false,
@@ -362,15 +421,15 @@ class _JadwalPagePageState extends State<JadwalPage> {
                                                                 "Lama Pengerjaan"),
                                                           ],
                                                           rows: List.generate(
-                                                            3,
+                                                            lt1.length,
                                                             (indexItem) {
                                                               return DataRow(
                                                                 cells: [
                                                                   datRow1(
-                                                                      "SP-1"),
+                                                                      lt1[indexItem][0]),
                                                                   datRow1(
-                                                                      "Cor Kolom Struktur"),
-                                                                  datRow1("14"),
+                                                                      lt1[indexItem][1]),
+                                                                  datRow1(lt1[indexItem][2]),
                                                                 ],
                                                               );
                                                             },
@@ -408,7 +467,7 @@ class _JadwalPagePageState extends State<JadwalPage> {
                                                       datCol(""),
                                                     ],
                                                     rows: List.generate(
-                                                      3,
+                                                      lt1.length,
                                                       (index) {
                                                         return DataRow(
                                                           cells: [
@@ -1914,6 +1973,86 @@ class _ReadJadwalPagePageState extends State<ReadJadwalPage> {
     super.dispose();
   }
 
+  List lt1 = [
+    [
+      'bj101',
+      'Pondasi Plat setempat',
+      '14',
+      '25-06-2023',
+      '08-07-2023',
+    ],
+    [
+      'bj102',
+      'Urug tanah Keseluruhan (t=70 cm)',
+      '14',
+      '09-07-2023',
+      '22-07-2023',
+    ],
+    [
+      'bj103',
+      'Cor Kolom struktur (20/30)',
+      '7',
+      '23-07-2023',
+      '29-07-2023',
+    ],
+    [
+      'bj104',
+      'Cor Blok strruktur (30/30)',
+      '7',
+      '30-07-2023',
+      '05-08-2023',
+    ],
+    [
+      'bj105',
+      'Cor sloof (20/20)',
+      '7',
+      '06-08-2023',
+      '12-08-2023',
+    ],
+    [
+      'bj106',
+      'Cor Kolom praktis (15/15)',
+      '7',
+      '13-08-2023',
+      '19-08-2023',
+    ],
+    [
+      'bj107',
+      'Cor Rabatan lantai (t=7 cm)',
+      '7',
+      '20-08-2023',
+      '26-08-2023',
+    ],
+    [
+      'bj108',
+      'Cor Balok Tangga + Trap Tangga',
+      '7',
+      '27-08-2023',
+      '02-09-2023',
+    ],
+    [
+      'bj109',
+      'Pasang bata putih untuk dinding dan bawah sloof',
+      '14',
+      '03-09-2023',
+      '16-09-2023',
+    ],
+    [
+      'bj110',
+      'Plester dinding, kolom, balok, plat lantai 2 ( tanpa plafon), tangga',
+      '7',
+      '17-09-2023',
+      '23-09-2023',
+    ],
+    [
+      'bj111',
+      'Acian dinding, kolom, balok, plat lantai 2 (tanpa plafon), tangga',
+      '7',
+      '24-09-2023',
+      '30-09-2023',
+    ],
+  ];
+
   TextFieldYa() {
     return TextField(
       readOnly: false,
@@ -2255,17 +2394,17 @@ class _ReadJadwalPagePageState extends State<ReadJadwalPage> {
                                                             datCol("End"),
                                                           ],
                                                           rows: List.generate(
-                                                            3,
+                                                            lt1.length,
                                                             (indexItem) {
                                                               return DataRow(
                                                                 cells: [
                                                                   datRow1(
-                                                                      "SP-1"),
+                                                                      lt1[indexItem][0]),
                                                                   datRow1(
-                                                                      "Cor Kolom Struktur"),
-                                                                  datRow1("14"),
-                                                                  datRow1(""),
-                                                                  datRow1(""),
+                                                                      lt1[indexItem][1]),
+                                                                  datRow1(lt1[indexItem][2]),
+                                                                  datRow1(lt1[indexItem][3]),
+                                                                  datRow1(lt1[indexItem][4]),
                                                                 ],
                                                               );
                                                             },
@@ -2303,7 +2442,7 @@ class _ReadJadwalPagePageState extends State<ReadJadwalPage> {
                                                       datCol(""),
                                                     ],
                                                     rows: List.generate(
-                                                      3,
+                                                      lt1.length,
                                                       (index) {
                                                         return DataRow(
                                                           cells: [
